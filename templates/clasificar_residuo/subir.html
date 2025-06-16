@@ -1,0 +1,107 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %} Clasificación - EcoSoft {% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/clasificacion.css' %}?v=1.8">
+
+<h2 class="text-center mb-4">
+  Clasificación de Residuos
+</h2>
+
+<div class="container">
+  <!-- 🗑️ TIPO DE RESIDUO -->
+  <div class="recipiente-section">
+    <h4>RECIPIENTE</h4>
+    <div id="resultadosCamara">
+      {% if residuos_con_confianza %}
+        {% for residuo in residuos_con_confianza %}
+          {% if residuo.clase == 'plastico' %}
+            <img src="{% static 'img/plastico.png' %}" alt="plastico" class="residuo-img"/>
+          {% elif residuo.clase == 'papel' %}
+            <img src="{% static 'img/papel.png' %}" alt="papel" class="residuo-img"/>
+          {% elif residuo.clase == 'vidrio' %}
+            <img src="{% static 'img/vidrio.png' %}" alt="vidrio" class="residuo-img"/>
+          {% elif residuo.clase == 'metal' %}
+            <img src="{% static 'img/metal.png' %}" alt="metal" class="residuo-img"/>
+          {% else %}
+            <p>No se tiene imagen para este tipo de residuo: {{ residuo.clase }}</p>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <p id="textoResultados">Clasifica una imagen o usa la cámara para ver el tipo de residuo.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- 📷 CÁMARA / SUBIR -->
+  <div class="camera-section">
+    <div class="button-group">
+      <button id="modoCamaraBtn">📷 Usar cámara</button>
+      <button id="modoArchivoBtn">🖼️ Subir</button>
+    </div>
+
+    <div id="previewBox">
+      <div id="camaraSeccion">
+        <video id="video" autoplay></video>
+        <canvas id="canvas"></canvas>
+      </div>
+      <img id="previewImg" src="{% if imagen_url %}{{ imagen_url }}{% else %}{% static 'img/camera.png' %}{% endif %}"
+        alt="Vista previa" />
+    </div>
+
+    <form id="formulario" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" name="imagen" id="imagenInput" accept="image/*"/>
+      <button type="submit" id="clasificarBtn">Clasificar</button>
+    </form>
+  </div>
+
+  <!-- ℹ️ INFORMACIÓN DEL RESIDUO -->
+  <div class="info-section">
+    <h4>INFORMACIÓN DEL RESIDUO</h4>
+    <div id="infoResiduos">
+      {% if residuos_con_confianza %}
+        {% for residuo in residuos_con_confianza %}
+          <p><strong>Tipo:</strong> {{ residuo.clase|capfirst }} (Confianza: {{ residuo.confianza }}%)</p>
+          {% if residuo.clase == 'plastico' %}
+            <p><strong>Tiempo de degradación:</strong> 100-1000 años</p>
+            <p><strong>Impacto ambiental:</strong> Los plásticos contribuyen a la contaminación de océanos y suelos, afectando la fauna marina y terrestre. Microplásticos ingeridos por animales pueden entrar en la cadena alimenticia, impactando la salud humana.</p>
+            <p><strong>Recomendación de reciclaje:</strong> Separa botellas, envases y bolsas plásticas, límpialos y deposítalos en contenedores de reciclaje. Evita plásticos de un solo uso.</p>
+          {% elif residuo.clase == 'papel' %}
+            <p><strong>Tiempo de degradación:</strong> 2-6 semanas</p>
+            <p><strong>Impacto ambiental:</strong> La producción de papel consume grandes cantidades de agua y energía, y contribuye a la deforestación. El reciclaje reduce la necesidad de talar árboles y el uso de recursos.</p>
+            <p><strong>Recomendación de reciclaje:</strong> Recicla papel limpio y seco, como periódicos, cartones y hojas. Evita mezclar con residuos orgánicos.</p>
+          {% elif residuo.clase == 'vidrio' %}
+            <p><strong>Tiempo de degradación:</strong> Indefinido (miles de años)</p>
+            <p><strong>Impacto ambiental:</strong> Aunque no libera toxinas, el vidrio desechado ocupa espacio en vertederos. Su reciclaje es altamente eficiente, ya que puede reutilizarse infinitamente sin pérdida de calidad.</p>
+            <p><strong>Recomendación de reciclaje:</strong> Lava y separa botellas y frascos de vidrio por color (si aplica) y deposítalos en contenedores específicos.</p>
+          {% elif residuo.clase == 'metal' %}
+            <p><strong>Tiempo de degradación:</strong> 50-500 años</p>
+            <p><strong>Impacto ambiental:</strong> La extracción de metales agota recursos naturales y genera contaminación. Metales desechados pueden liberar sustancias tóxicas en el suelo y agua.</p>
+            <p><strong>Recomendación de reciclaje:</strong> Recicla latas, envases y objetos metálicos. Asegúrate de limpiarlos para facilitar el proceso de reciclaje.</p>
+          {% else %}
+            <p>No se tiene información detallada para el residuo: {{ residuo.clase }}</p>
+            <p><strong>Recomendación:</strong> Consulta con tu centro de reciclaje local para clasificar correctamente este material.</p>
+          {% endif %}
+          <hr/>
+        {% endfor %}
+      {% else %}
+        <p>No se tiene información para este tipo de residuo.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<!-- Cargar el archivo JavaScript externo y pasar variables de Django -->
+<script>
+  // Pasar variables de Django al ámbito global para que clasificacion.js las use
+  window.procesarFrameUrl = "{% url 'procesar_frame' %}";
+  window.csrfToken = "{{ csrf_token }}";
+  window.staticImages = {
+    plastico: "{% static 'img/plastico.png' %}",
+    papel: "{% static 'img/papel.png' %}",
+    vidrio: "{% static 'img/vidrio.png' %}",
+    metal: "{% static 'img/metal.png' %}"
+  };
+</script>
+<script src="{% static 'js/clasificacion.js' %}?v=1.2"></script>
+{% endblock %}

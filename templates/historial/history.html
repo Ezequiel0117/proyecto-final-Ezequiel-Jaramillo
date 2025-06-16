@@ -1,0 +1,154 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/history.css' %}?v=2.7">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<div class="history-page">
+    <div class="history-content">
+        <div class="content-wrapper">
+            <h2 class="page-title">🌱 Historial de Reciclaje</h2>
+
+            <!-- Residue Class Cards -->
+            <div class="residue-class-container">
+                <div class="residue-class-card all-residues">
+                    <div class="class-icon"><i class="fas fa-recycle"></i></div>
+                    <h3>Todos</h3>
+                    <p>Total: {{ residue_counts.plastico|add:residue_counts.vidrio|add:residue_counts.papel|add:residue_counts.metal }} items</p>
+                    <a href="{% url 'history' %}" class="class-btn {% if not filter_residue %}active{% endif %}">Mostrar Todos</a>
+                </div>
+                <div class="residue-class-card plastic">
+                    <div class="class-icon"><i class="fas fa-wine-bottle"></i></div>
+                    <h3>Plástico</h3>
+                    <p>Total: {{ residue_counts.plastico }} items</p>
+                    <a href="{% url 'history' %}?residue=plastico" class="class-btn {% if filter_residue == 'plastico' %}active{% endif %}">Mostrar Todos</a>
+                </div>
+                <div class="residue-class-card metal">
+                    <div class="class-icon"><i class="fas fa-tools"></i></div>
+                    <h3>Metal</h3>
+                    <p>Total: {{ residue_counts.metal }} items</p>
+                    <a href="{% url 'history' %}?residue=metal" class="class-btn {% if filter_residue == 'metal' %}active{% endif %}">Mostrar Todos</a>
+                </div>
+                <div class="residue-class-card glass">
+                    <div class="class-icon"><i class="fas fa-glass-whiskey"></i></div>
+                    <h3>Vidrio</h3>
+                    <p>Total: {{ residue_counts.vidrio }} items</p>
+                    <a href="{% url 'history' %}?residue=vidrio" class="class-btn {% if filter_residue == 'vidrio' %}active{% endif %}">Mostrar Todos</a>
+                </div>
+                <div class="residue-class-card paper-cardboard">
+                    <div class="class-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3>Papel</h3>
+                    <p>Total: {{ residue_counts.papel }} items</p>
+                    <a href="{% url 'history' %}?residue=papel" class="class-btn {% if filter_residue == 'papel' %}active{% endif %}">Mostrar Todos</a>
+                </div>
+            </div>
+
+            <!-- History Cards -->
+            <div class="card-container" id="history-cards">
+                {% for item in history_items %}
+                <div class="recycle-card">
+                    <div class="card-header">
+                        <div class="icon-container">
+                            {% for residue in item.residues %}
+                                {% if residue.residue|lower == 'plastico' %}
+                                    <div class="icon plastic">
+                                        <i class="fas fa-wine-bottle"></i>
+                                    </div>
+                                {% elif residue.residue|lower == 'vidrio' %}
+                                    <div class="icon glass">
+                                        <i class="fas fa-glass-whiskey"></i>
+                                    </div>
+                                {% elif residue.residue|lower == 'papel' %}
+                                    <div class="icon paper-cardboard">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                {% elif residue.residue|lower == 'metal' %}
+                                    <div class="icon metal">
+                                        <i class="fas fa-tools"></i>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <h5 class="card-title">Clasificación<br><small class="card-date">{{ item.timestamp }}</small></h5>
+                    </div>
+                    
+                    <div class="weight-badge">
+                        <i class="fas fa-weight me-1" style="font-size: 0.6rem;"></i>{{ item.weight }}
+                    </div>
+                    
+                    <ul class="residue-list">
+                        {% for residue in item.residues %}
+                            <li class="residue-item {% if residue.residue|lower == 'plastico' %}plastic{% elif residue.residue|lower == 'vidrio' %}glass{% elif residue.residue|lower == 'papel' %}paper-cardboard{% elif residue.residue|lower == 'metal' %}metal{% else %}unknown{% endif %}">
+                                <div class="residue-icon">
+                                    {% if residue.residue|lower == 'plastico' %}
+                                        <i class="fas fa-wine-bottle" style="color: #e74c3c;"></i>
+                                    {% elif residue.residue|lower == 'vidrio' %}
+                                        <i class="fas fa-glass-whiskey" style="color: #00b894;"></i>
+                                    {% elif residue.residue|lower == 'papel' %}
+                                        <i class="fas fa-file-alt" style="color: #795548;"></i>
+                                    {% elif residue.residue|lower == 'metal' %}
+                                        <i class="fas fa-tools" style="color: #607d8b;"></i>
+                                    {% else %}
+                                        <i class="fas fa-recycle" style="color: #27ae60;"></i>
+                                    {% endif %}
+                                </div>
+                                <span class="residue-text">{{ residue.residue }} ({{ residue.count }})</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if not history_items %}
+                <div class="empty-state">
+                    <i class="fas fa-leaf"></i>
+                    <p>No hay historial de reciclaje disponible.<br>¡Comienza a reciclar para ver tus registros aquí!</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Paginación -->
+        <nav class="pagination-section">
+            <ul class="pagination justify-content-center">
+                {% if history_items.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ history_items.previous_page_number }}{% if filter_residue %}&residue={{ filter_residue }}{% endif %}" aria-label="Anterior">
+                            <span aria-hidden="true">« Anterior</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">« Anterior</span>
+                    </li>
+                {% endif %}
+
+                {% for num in history_items.paginator.page_range %}
+                    {% if history_items.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > history_items.number|add:-3 and num < history_items.number|add:3 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if filter_residue %}&residue={{ filter_residue }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if history_items.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ history_items.next_page_number }}{% if filter_residue %}&residue={{ filter_residue }}{% endif %}" aria-label="Siguiente">
+                            <span aria-hidden="true">Siguiente »</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Siguiente »</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+.ranking-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 15px;
+    font-size: 14px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ranking-table th, .ranking-table td {
+    padding: 14px 12px;
+    text-align: left;
+    border-bottom: 2px solid #e0e0e0; /* Líneas divisorias más marcadas */
+}
+
+.ranking-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 3px solid #d0d0d0;
+}
+
+.ranking-table .position {
+    width: 80px;
+    text-align: center;
+}
+
+.ranking-table .residuos {
+    text-align: right;
+    width: 120px;
+}
+
+.ranking-table .gold {
+    background-color: #fffbeb;
+    color: #713f12;
+    font-weight: 600;
+}
+
+.ranking-table .silver {
+    background-color: #f9fafb;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.ranking-table .bronze {
+    background-color: #fefce8;
+    color: #78350f;
+    font-weight: 600;
+}
+
+.ranking-table .crown {
+    font-size: 18px;
+    margin-right: 8px;
+}
+
+.ranking-table .gold .crown {
+    color: #FFD700; /* Oro */
+}
+
+.ranking-table .silver .crown {
+    color: #C0C0C0; /* Plata */
+}
+
+.ranking-table .bronze .crown {
+    color: #CD7F32; /* Bronce */
+}
+
+.ranking-table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.ranking-table tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+.no-data {
+    text-align: center;
+    padding: 24px;
+    color: #6b7280;
+    font-style: italic;
+}

@@ -1,0 +1,303 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Mapa - EcoSoft{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/mapa.css' %}">
+
+
+  <div class="titulo-banner">
+      <h1>📍 Mapa de Reciclaje</h1></p>
+  </div>
+
+{% if user.is_superuser %}
+<div class="formulario-mapa">
+  <input type="text" id="provincia" placeholder="Provincia (ej: Guayas)" autocomplete="off"/>
+  <input type="text" id="ciudad" placeholder="Ciudad (ej: Guayaquil)" autocomplete="off"/>
+  <input type="text" id="nombre" placeholder="Nombre del punto" autocomplete="off"/>
+  <input type="text" id="lat" placeholder="Latitud (ej: -2.189)" autocomplete="off"/>
+  <input type="text" id="lng" placeholder="Longitud (ej: -79.889)" autocomplete="off"/>
+  <input type="text" id="tipo" placeholder="Tipo de reciclaje (ej: Papel)" autocomplete="off"/>
+  <input type="text" id="peso" placeholder="Peso promedio (ej: 10kg/día)" autocomplete="off"/>
+  <button onclick="agregarMarcador()">Agregar Marcador</button>
+</div>
+{% endif %}
+
+{% if not user.is_superuser %}
+<div class="filtros-container">
+  <h3 class="filtros-title">🔍 Filtros de Búsqueda</h3>
+  <div class="filtros-grid">
+    <div class="filtro-group">
+      <label for="filtroProvincia">🌎 Provincia:</label>
+      <select id="filtroProvincia" onchange="filtrarMarcadores()">
+        <option value="">-- Todas --</option>
+        {% for punto in puntos %}
+          <option value="{{ punto.provincia|title }}">{{ punto.provincia|title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="filtro-group">
+      <label for="filtroCiudad">🏙️ Ciudad:</label>
+      <select id="filtroCiudad" onchange="filtrarMarcadores()">
+        <option value="">-- Todas --</option>
+        {% for punto in puntos %}
+          <option value="{{ punto.ciudad|title }}">{{ punto.ciudad|title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="filtro-group">
+      <label for="filtroTipo">♻️ Residuo:</label>
+      <select id="filtroTipo" onchange="filtrarMarcadores()">
+        <option value="">-- Todos --</option>
+        {% for punto in puntos %}
+          <option value="{{ punto.materiales|lower }}">{{ punto.materiales|title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="mapa-container">
+  <div id="map"></div>
+</div>
+
+{% if user.is_superuser %}
+  <table>
+    <thead>
+      <tr>
+        <th>Provincia</th> 
+        <th>Ciudad</th> 
+        <th>Nombre</th>
+        <th>Latitud</th>
+        <th>Longitud</th>
+        <th>Tipo de reciclaje</th>
+        <th>Peso estimado</th>
+        <th>Ubicación</th>
+      </tr>
+    </thead>
+    <tbody id="listaPuntos">
+      {% for punto in puntos %}
+      <tr data-id="{{ punto.id }}">
+        <td>{{ punto.provincia }}</td>
+        <td>{{ punto.ciudad }}</td>
+        <td>{{ punto.nombre }}</td>
+        <td>{{ punto.latitud }}</td>
+        <td>{{ punto.longitud }}</td>
+        <td>{{ punto.materiales }}</td>
+        <td>{{ punto.capacidad_kg }}kg/día</td>
+        <td>
+          <button class="btn-ver" onclick="centrarMapa({{ punto.latitud }}, {{ punto.longitud }})">Ver ubicación</button>
+          {% if user.is_superuser %}
+          <button class="btn-eliminar" onclick="eliminarPunto({{ punto.id }})">Eliminar</button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+<script>
+  const marcadores = [];
+
+  document.cookie = "csrftoken={{ csrf_token }}";
+
+  const map = L.map("map").setView([-2.189412, -79.889066], 13);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
+  }).addTo(map);
+
+  {% for punto in puntos %}
+    const marker_{{ punto.id }} = L.marker([{{ punto.latitud }}, {{ punto.longitud }}])
+      .addTo(map)
+      .bindPopup(`
+        <div style="font-family: Arial, sans-serif;">
+          <div style="font-weight: bold; font-size: 16px; color: #198754;">
+            📍 {{ punto.nombre }}
+          </div>
+          <div style="margin-top: 5px;">
+            <span style="color: #444;">♻️ Tipo de residuo:</span> {{ punto.materiales }}
+          </div>
+          <div style="margin-top: 3px;">
+            <span style="color: #444;">⚖️ Tasa promedio diaria:</span> {{ punto.capacidad_kg }} kg/día
+          </div>
+        </div>
+      `)
+      .on("click", function () {
+        map.setView([{{ punto.latitud }}, {{ punto.longitud }}], 16);
+        this.openPopup();
+
+        const icon = this._icon;
+        icon.classList.add('bounce');
+        setTimeout(() => icon.classList.remove('bounce'), 500);
+      });
+
+    marker_{{ punto.id }}.tipoResiduo = "{{ punto.materiales|lower }}";
+    marker_{{ punto.id }}.provincia = "{{ punto.provincia|lower }}";
+    marker_{{ punto.id }}.ciudad = "{{ punto.ciudad|lower }}";
+    marcadores.push(marker_{{ punto.id }});
+  {% endfor %}
+
+
+  function agregarMarcador() {
+    const lat = parseFloat(document.getElementById("lat").value);
+    const lng = parseFloat(document.getElementById("lng").value);
+    const nombre = document.getElementById("nombre").value;
+    const tipo = document.getElementById("tipo").value;
+    const peso = document.getElementById("peso").value;
+    const provincia = document.getElementById("provincia").value;
+    const ciudad = document.getElementById("ciudad").value;
+
+    if (!provincia || !ciudad || isNaN(lat) || isNaN(lng) || !nombre || !tipo || !peso) {
+      alert("Por favor completa todos los campos correctamente.");
+      return;
+    }
+
+    guardarPuntoEnServidor(provincia, ciudad, nombre, lat, lng, tipo, peso);
+  }
+
+  function guardarPuntoEnServidor(provincia, ciudad, nombre, lat, lng, tipo, peso) {
+    fetch("/guardar-punto/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+      },
+      body: JSON.stringify({
+        provincia: provincia,
+        ciudad: ciudad,
+        nombre: nombre,
+        latitud: lat,
+        longitud: lng,
+        materiales: tipo,
+        capacidad_kg: peso
+      }),
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.status === "ok") {
+        // ✅ Agregar marcador dinámicamente al mapa
+        const marker = L.marker([lat, lng])
+          .addTo(map)
+          .bindPopup(`
+            <div style="font-family: Arial, sans-serif;">
+              <div style="font-weight: bold; font-size: 16px; color: #198754;">
+                📍 ${nombre}
+              </div>
+              <div style="margin-top: 5px;">
+                <span style="color: #444;">🗺️ Ciudad:</span> ${ciudad}
+              </div>
+              <div style="margin-top: 3px;">
+                <span style="color: #444;">♻️ Tipo de residuo:</span> ${tipo}
+              </div>
+              <div style="margin-top: 3px;">
+                <span style="color: #444;">⚖️ Tasa promedio diaria:</span> ${peso}
+              </div>
+            </div>
+          `)
+          .on("click", function () {
+            map.setView([lat, lng], 16);
+            this.openPopup();
+          });
+
+        marker.openPopup();
+
+        // ✅ Agregar nueva fila a la tabla (si aplica para superusuario)
+        const fila = document.createElement("tr");
+        fila.setAttribute("data-id", data.id);
+        fila.innerHTML = `
+          <td>${provincia}</td>
+          <td>${ciudad}</td>
+          <td>${nombre}</td>
+          <td>${lat}</td>
+          <td>${lng}</td>
+          <td>${tipo}</td>
+          <td>${peso}</td>
+          <td>
+            <button class="btn-ver" onclick="centrarMapa(${lat}, ${lng})">Ver ubicación</button>
+            <button class="btn-eliminar" onclick="eliminarPunto(${data.id})">Eliminar</button>
+          </td>
+        `;
+        const tabla = document.getElementById("listaPuntos");
+        if (tabla) tabla.appendChild(fila);
+
+        alert("✅ Punto guardado con éxito");
+      } else {
+        alert("❌ Error al guardar: " + data.mensaje);
+      }
+    });
+  }
+
+  function eliminarPunto(id) {
+    fetch(`/eliminar-punto/${id}/`, {
+      method: "DELETE",
+      headers: {
+        "X-CSRFToken": getCSRFToken(),
+      },
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.status === "ok") {
+        document.querySelector(`tr[data-id='${id}']`).remove();
+
+        // ❌ Quitar marcador del mapa
+        if (marcadores[id]) {
+          map.removeLayer(marcadores[id]);
+          delete marcadores[id];
+        }
+
+        alert("✅ Punto eliminado correctamente.");
+      } else {
+        alert("❌ Error al eliminar.");
+      }
+    });
+  }
+
+  function centrarMapa(lat, lng) {
+    map.setView([lat, lng], 16);
+    L.marker([lat, lng]).addTo(map).openPopup();
+  }
+
+  function getCSRFToken() {
+    const name = "csrftoken";
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      let cookie = cookies[i].trim();
+      if (cookie.startsWith(name + "=")) {
+        return decodeURIComponent(cookie.substring(name.length + 1));
+      }
+    }
+    return "";
+  }
+
+  function filtrarMarcadores() {
+    const tipoSeleccionado = document.getElementById("filtroTipo").value.toLowerCase();
+    const provinciaSeleccionada = document.getElementById("filtroProvincia").value.toLowerCase();
+    const ciudadSeleccionada = document.getElementById("filtroCiudad").value.toLowerCase();
+
+    marcadores.forEach(marker => {
+      const tipo = (marker.tipoResiduo || '').toLowerCase();
+      const provincia = (marker.provincia || '').toLowerCase();
+      const ciudad = (marker.ciudad || '').toLowerCase();
+
+      const coincideTipo = !tipoSeleccionado || tipo === tipoSeleccionado;
+      const coincideProvincia = !provinciaSeleccionada || provincia === provinciaSeleccionada;
+      const coincideCiudad = !ciudadSeleccionada || ciudad === ciudadSeleccionada;
+
+      if (coincideTipo && coincideProvincia && coincideCiudad) {
+        if (!map.hasLayer(marker)) map.addLayer(marker);
+      } else {
+        map.removeLayer(marker);
+      }
+    });
+  }
+
+</script>
+{% endblock %}

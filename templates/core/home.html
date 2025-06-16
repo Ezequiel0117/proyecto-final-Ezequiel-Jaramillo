@@ -1,0 +1,114 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Dashboard - EcoSoft{% endblock %}
+{% block content %}
+<!-- Google Fonts -->
+<link
+  href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>
+<!-- Font Awesome -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+
+<div class="dashboard-container">
+  {% if user.is_authenticated %}
+    <!-- Contenido del dashboard para usuarios autenticados -->
+    <div class="titulo-banner">
+      <h1>Bienvenido {{ user.username }} - EcoSoft</h2>
+      <p>Sigue tu impacto en el reciclaje y contribuye a un futuro sostenible.</p>
+    </div>
+
+    <div class="card-container">
+      <div class="card-grid">
+        <!-- Impacto Ecológico -->
+        <div class="card">
+          <div class="card-header">
+            <h3>
+              <div class="card-icon" style="background: linear-gradient(135deg, #4CAF50, #66BB6A);">
+                <i class="fas fa-leaf"></i>
+              </div>
+              Impacto Ecológico
+            </h3>
+          </div>
+          <div class="chart-container">
+            <div class="pie-chart-container">
+              <div id="grafico-impacto"></div>
+              <div class="legend-container" id="legend-impacto"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resumen Mensual -->
+        <div class="card">
+          <div class="card-header">
+            <h3>
+              <div class="card-icon" style="background: linear-gradient(135deg, #2196F3, #64B5F6);">
+                <i class="fas fa-chart-bar"></i>
+              </div>
+              Resumen Mensual
+            </h3>
+          </div>
+          <div class="chart-container">
+            <div class="bar-chart-container">
+              <div id="grafico-resumen"></div>
+            </div>
+            <a href="{% url 'export_metrics_pdf' %}" class="btn-primary">
+              <i class="fas fa-file-pdf"></i> Descargar PDF
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progreso de Residuos Mensuales -->
+      <div class="card-full">
+        <div class="card-header">
+          <h3>
+            <div class="card-icon" style="background: linear-gradient(135deg, #FF9800, #FFB74D);">
+              <i class="fas fa-recycle"></i>
+            </div>
+            Progreso de Residuos Mensuales
+          </h3>
+        </div>
+        <div class="chart-container">
+          <div class="progress-container">
+            <h4 class="chart-title">Meta Mensual de Reciclaje</h4>
+            <div id="grafico-progreso"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <!-- Contenido para usuarios no autenticados -->
+    <div class="welcome-container">
+      <div class="project-description">
+        <h2>Bienvenido a EcoSoft - Proyecto UNEMI 2025</h2>
+        <p>
+          EcoSoft es una innovadora iniciativa desarrollada por la Universidad Nacional de Educación (UNEMI) en 2025, diseñada para abordar el creciente problema de la contaminación y el manejo inadecuado de residuos a través de la tecnología. Este proyecto utiliza inteligencia artificial y aprendizaje automático para clasificar residuos de manera precisa, promoviendo el reciclaje y la sostenibilidad. Nuestro objetivo es empoderar a las comunidades para que reduzcan su huella ecológica, fomentando un cambio positivo hacia un futuro más verde.
+        </p>
+        <p>
+          La plataforma permite a los usuarios registrar y clasificar sus residuos, obtener métricas de impacto ambiental (como reducción de CO₂ y equivalentes en árboles salvados), y participar en un ranking de reciclaje. ¡Únete a nosotros para transformar el mundo, un residuo a la vez!
+        </p>
+        <a href="{% url 'signin' %}" class="btn-primary">
+          <i class="fas fa-sign-in-alt me-1"></i> Inicia Sesión o Regístrate
+        </a>
+      </div>
+      <div class="pollution-gallery">
+        <img src="{% static 'img/contamicacion_aire.jpg' %}" alt="Aire contaminado" class="gallery-item">
+        <img src="{% static 'img/contamicacion_c.jpeg' %}" alt="Vertederos de basura" class="gallery-item">
+        <img src="{% static 'img/contaminacion-b-de-agua1.jpg' %}" alt="Ríos contaminados" class="gallery-item">
+        <img src="{% static 'img/plasticos_c.jpg' %}" alt="Contaminación por plásticos" class="gallery-item">
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- D3.js -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<!-- Cargar el archivo JavaScript externo -->
+<script src="{% static 'js/dashboard.js' %}?v=2.0"></script>
+{% endblock %}

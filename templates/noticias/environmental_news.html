@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Noticias Ambientales - EcoSoft{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/noticias.css' %}?v=1.6">
+
+<!-- Banner del título -->
+<div class="titulo-banner">
+  <h1>Noticias Ambientales</h1>
+</div>
+
+<div class="container mt-5 mb-5">
+    <!-- Formulario de búsqueda y días -->
+    <div class="filter-section">
+        <div class="row mb-3">
+            <div class="col-md-10 offset-md-1">
+                <form action="{% url 'noticias' %}" method="get" class="d-flex align-items-end gap-3">
+                    <div class="col-6">
+                        <label for="search" class="history-form-label">🔍 Buscar noticias ambientales</label>
+                        <input type="text" name="q" id="search" class="history-form-control" placeholder="Ej: reciclaje, sostenibilidad..." value="{{ search_query|default:'' }}">
+                    </div>
+                    <div class="col-3">
+                        <label for="days" class="history-form-label">📅 Rango de tiempo</label>
+                        <select name="days" id="days" class="history-form-select">
+                            <option value="7" {% if days == 7 %}selected{% endif %}>Últimos 7 días</option>
+                            <option value="14" {% if days == 14 %}selected{% endif %}>Últimos 14 días</option>
+                            <option value="30" {% if days == 30 %}selected{% endif %}>Últimos 30 días</option>
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <button type="submit" class="history-btn-custom">Filtrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% if articles %}
+        <div class="row">
+            {% for article in articles %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow border-0">
+                        {% if article.urlToImage %}
+                            <img src="{{ article.urlToImage }}" class="card-img-top" alt="{{ article.title|truncatewords:10 }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light text-center" style="height: 200px; line-height: 200px; color: #888;">
+                                Sin imagen disponible
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title text-success">{{ article.title|truncatewords:10 }}</h5>
+                            <p class="card-text text-muted">{{ article.description|truncatewords:20|default:"Sin descripción disponible" }}</p>
+                            <p class="text-muted small"><strong>Publicado:</strong> {{ article.publishedAt|date:"d/m/Y H:i" }}</p>
+                            <a href="{{ article.url }}" target="_blank" class="btn btn-outline-success btn-sm">Leer más</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center" role="alert">
+            No se encontraron noticias ambientales para esta búsqueda.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

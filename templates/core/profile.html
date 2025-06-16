@@ -1,0 +1,96 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Perfil - EcoSoft{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}?v=1.0">
+<!-- Enlace al archivo JS externo -->
+<script src="{% static 'js/profile.js' %}?v=1.0" defer></script>
+
+<div class="profile-page">
+    <div class="profile-content">
+        <div class="profile-container">
+            <div class="profile-sidebar">
+                <h2 class="sidebar-title">Perfil del Usuario</h2>
+                <img id="profilePreview"
+                     src="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'img/user.webp' %}{% endif %}"
+                     alt="Avatar"
+                     class="user-avatar">
+                <strong class="user-name">{{ request.user.first_name }} {{ request.user.last_name }}</strong>
+
+                <h3 class="ranking-title">Ranking de Reciclaje</h3>
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Posición</th>
+                            <th>Usuario</th>
+                            <th>Residuos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in ranking %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.total_residuos }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="empty">No hay datos de ranking disponibles</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="profile-form">
+                <h1 class="form-title">Datos Personales</h1>
+                <form method="post" class="profile-form-content" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label class="form-label">Foto de perfil:</label>
+                        <div class="profile-picture-wrapper">
+                            <input type="file" name="profile_picture" class="form-control d-none" id="profilePictureInput">
+                            <button type="button" class="btn-change-picture">
+                                <i class="fas fa-camera me-1"></i> Cambiar foto de perfil
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nombre de usuario:</label>
+                        {{ form.username }}
+                        <i class="fas fa-pen edit-icon"></i>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nombres:</label>
+                        {{ form.first_name }}
+                        <i class="fas fa-pen edit-icon"></i>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Apellidos:</label>
+                        {{ form.last_name }}
+                        <i class="fas fa-pen edit-icon"></i>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Correo electrónico:</label>
+                        {{ form.email }}
+                        <i class="fas fa-pen edit-icon"></i>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Teléfono:</label>
+                        {{ form.phone }}
+                        <i class="fas fa-pen edit-icon"></i>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{% url 'password_reset' %}" class="btn-password">Cambiar contraseña</a>
+                        <button type="submit" class="btn-save">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,204 @@
+/* ----------- ESTILOS GENERALES ----------- */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #1e1e1e;
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.image-section {
+  flex: 1;
+  background: url("../img/login_bck.jpg") no-repeat center center;
+  background-size: cover;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.form-section {
+  flex: 1;
+  background-color: #fff;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.form-section h2 {
+  margin-bottom: 20px;
+  font-size: 28px;
+  color: #222;
+  text-align: center;
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: 30px; /* Increased to reserve space for error bubbles */
+  display: flex;
+  justify-content: center;
+}
+
+.form-group input {
+  width: 41%;
+  padding: 12px 40px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  display: block;
+}
+
+.form-group i {
+  position: absolute;
+  top: 50%;
+  left: calc(30% + 10px);
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none;
+  font-size: 18px;
+}
+
+.password-group {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: calc(30% + 10px);
+  transform: translateY(-50%);
+  color: #888;
+  cursor: pointer;
+  font-size: 18px;
+  pointer-events: auto;
+}
+
+.password-hints {
+  width: 41%;
+  margin: 0 auto 15px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.hint {
+  font-size: 14px;
+  color: #e74c3c;
+  margin: 5px 0;
+}
+
+.hint.valid {
+  color: #2ecc71;
+}
+
+.field-error {
+  position: absolute;
+  top: -40px; /* Position above the input */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #e74c3c;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  max-width: 41%; /* Match input width */
+  text-align: center;
+  z-index: 10;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.field-error::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #e74c3c;
+}
+
+.btn {
+  background-color: #38a169;
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  width: 300px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 20px auto;
+  display: block;
+}
+
+.btn:hover {
+  background-color: #2f855a;
+}
+
+/* ----------- ESTILOS ESPECÍFICOS PARA LOGIN ----------- */
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 15px;
+  color: #555;
+}
+
+.register-link a {
+  color: #38a169;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+/* ----------- ESTILOS ESPECÍFICOS PARA SIGNIN ----------- */
+
+.form-check {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.form-check label {
+  flex-grow: 1;
+}
+
+.form-check input {
+  margin-left: 14vw;
+}
+
+.signin-link {
+  text-align: center;
+  margin-top: 15px;
+  color: #555;
+}
+
+.signin-link a {
+  color: #38a169;
+  text-decoration: none;
+}
+
+.signin-link a:hover {
+  text-decoration: underline;
+}

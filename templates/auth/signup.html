@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Registro | EcoSoft</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static '/css/login_signup.css' %}" />
+    <script src="{% static '/js/signup.js' %}" defer></script>
+  </head>
+
+  <body class="auth-body">
+    <div class="container">
+      <!-- Imagen a la izquierda -->
+      <div class="image-section"></div>
+
+      <!-- Formulario a la derecha -->
+      <div class="form-section">
+        <h2>Crea tu cuenta!</h2>
+
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'signup' %}" class="auth-form">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <i class="fas fa-user"></i>
+            {{ form.username }}
+            {% if form.username.errors %}
+            <div class="field-error">{{ form.username.errors.as_text }}</div>
+            {% endif %}
+            <script>
+              document
+                .querySelector('input[name="username"]')
+                .setAttribute("placeholder", "Nombre de usuario");
+            </script>
+          </div>
+
+          <div class="form-group">
+            <i class="fas fa-envelope"></i>
+            {{ form.email }}
+            {% if form.email.errors %}
+            <div class="field-error">{{ form.email.errors.as_text }}</div>
+            {% endif %}
+            <script>
+              document
+                .querySelector('input[name="email"]')
+                .setAttribute("placeholder", "Nunca compartiremos tu correo electrónico");
+            </script>
+          </div>
+
+          <div class="form-group">
+            <i class="fas fa-phone"></i>
+            {{ form.phone }}
+            {% if form.phone.errors %}
+            <div class="field-error">{{ form.phone.errors.as_text }}</div>
+            {% endif %}
+            <script>
+              document
+                .querySelector('input[name="phone"]')
+                .setAttribute("placeholder", "Tu número de teléfono (opcional)");
+            </script>
+          </div>
+
+          <div class="form-group password-group">
+            <i class="fas fa-lock"></i>
+            {{ form.password1 }}
+            <i class="fas fa-eye toggle-password" onclick="togglePassword('password1')"></i>
+            {% if form.password1.errors %}
+            <div class="field-error">{{ form.password1.errors.as_text }}</div>
+            {% endif %}
+            <script>
+              document
+                .querySelector('input[name="password1"]')
+                .setAttribute("placeholder", "Elige una contraseña segura");
+            </script>
+          </div>
+          <div class="password-hints" id="password-hints">
+            <p class="hint">Debe cumplir al menos 3 de los siguientes:</p>
+            <p id="uppercase" class="hint">Una mayúscula</p>
+            <p id="lowercase" class="hint">Una minúscula</p>
+            <p id="number" class="hint">Un número</p>
+            <p id="special" class="hint">Un carácter especial (!@#$%^&*)</p>
+            <p id="length" class="hint">Mínimo 8 caracteres</p>
+            <p id="requirements-met" class="hint"></p>
+          </div>
+
+          <div class="form-group password-group">
+            <i class="fas fa-lock"></i>
+            {{ form.password2 }}
+            <i class="fas fa-eye toggle-password" onclick="togglePassword('password2')"></i>
+            {% if form.password2.errors %}
+            <div class="field-error">{{ form.password2.errors.as_text }}</div>
+            {% endif %}
+            <script>
+              document
+                .querySelector('input[name="password2"]')
+                .setAttribute("placeholder", "Repite tu contraseña");
+            </script>
+          </div>
+
+          <div class="form-check">
+            {{ form.remember_me }} {{ form.remember_me.label_tag }}
+          </div>
+
+          <button class="btn" type="submit">Continuar</button>
+        </form>
+
+        <div class="signin-link">
+          ¿Ya tienes una cuenta? <a href="{% url 'signin' %}">Iniciar sesión</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

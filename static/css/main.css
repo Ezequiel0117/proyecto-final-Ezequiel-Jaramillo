@@ -1,0 +1,280 @@
+body {
+    background-color: #f4fdf7;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar {
+    background-color: #00986c;
+    width: 220px;
+    height: 100vh;
+    position: fixed;
+    color: white;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.brand img {
+    width: 100px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.brand h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+}
+
+.nav {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.nav-item {
+    margin: 10px 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+    width: 100%;
+}
+
+.nav-link:hover {
+    background-color: #27a67b;
+    border-radius: 5px;
+    color: white;
+}
+
+/* Estilo específico para la imagen de perfil en el menú */
+.nav-link img {
+    width: 25px;
+    height: 25px;
+    max-width: 25px;
+    max-height: 25px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+}
+
+.nav-link:hover img {
+    transform: scale(1.1);
+}
+
+/* Main content */
+.main-content {
+    margin-left: 220px;
+    padding: 40px;
+    width: calc(100% - 220px);
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* Media query para pantallas grandes (TVs) */
+@media (min-width: 1200px) {
+    .sidebar {
+        overflow-y: auto;
+    }
+}
+
+/* Estilos del perfil */
+.perfil-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f2f8f4;
+}
+
+.perfil-lateral {
+    flex: 1;
+    background-color: #e6f2e6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    border-radius: 10px 0 0 10px;
+}
+
+.perfil-lateral h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.perfil-formulario {
+    flex: 2;
+    background-color: #fff;
+    padding: 60px 40px;
+    border-radius: 0 10px 10px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.perfil-formulario h1 {
+    font-size: 28px;
+    margin-bottom: 40px;
+    color: #2f855a;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #444;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.edit-icon {
+    position: absolute;
+    right: 10px;
+    top: 36px;
+    color: #2f855a;
+    cursor: pointer;
+}
+
+.btn-guardar {
+    background-color: #00986c;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 30px;
+    text-align: center;
+    width: auto;
+}
+
+.btn-guardar:hover {
+    background-color: #2f855a;
+}
+
+.btn-password {
+    display: inline-block;
+    margin-top: 10px;
+    color: #2f855a;
+    text-decoration: none;
+    font-size: 14px;
+    text-align: center;
+}
+
+.profile-icon-fallback {
+    font-size: 24px;
+    color: white;
+}
+
+/* Título Banner */
+.titulo-banner {
+    width: 100%;
+    background: linear-gradient(to right, #00986c, #56ab2f);
+    padding: 20px 0;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 1s ease-in-out;
+    margin-top: -20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.titulo-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: footerShine 3s infinite;
+}
+
+.titulo-banner h2 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 2.5rem;
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    margin: 0;
+}
+
+.titulo-banner p {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.1em;
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    margin: 10px 0 0;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 50px;
+    padding: 25px 0;
+    background: linear-gradient(to right, #00986c, #56ab2f);
+    color: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    font-size: 1.1em;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: footerShine 3s infinite;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes footerShine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}

@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/consejos.css' %}">
+<div class="container">
+    <div class="titulo-banner">
+        <h1>Consejos</h1>
+        <p>Aquí encontrarás consejos personalizados para mejorar tu reciclaje</p>
+    </div>
+    <div class="card-container">
+        <div class="cards">
+            <div class="card card1">
+                {% if residuos_por_clase.plastico > 0 %}
+                    <img src="{% static 'img/plasticos_consejos.png' %}" alt="Plásticos">
+                {% else %}
+                    <img src="{% static 'img/earth.webp' %}" alt="Planeta">
+                {% endif %}
+                <h3>Consejo - Plásticos</h3>
+                <p>{{ consejos.0 }}</p>
+            </div>
+            <div class="card card2">
+                {% if residuos_por_clase.papel > 0 %}
+                    <img src="{% static 'img/papel_consejos.png' %}" alt="Papel">
+                {% else %}
+                    <img src="{% static 'img/earth.webp' %}" alt="Planeta">
+                {% endif %}
+                <h3>Consejo - Papel</h3>
+                <p>{{ consejos.1 }}</p>
+            </div>
+            <div class="card card3">
+                {% if residuos_por_clase.vidrio > 0 %}
+                    <img src="{% static 'img/vidrio_consejos.png' %}" alt="Vidrio">
+                {% else %}
+                    <img src="{% static 'img/earth.webp' %}" alt="Planeta">
+                {% endif %}
+                <h3>Consejo - Vidrio</h3>
+                <p>{{ consejos.2 }}</p>
+            </div>
+            <div class="card card4">
+                {% if residuos_por_clase.metal > 0 %}
+                    <img src="{% static 'img/botella_metal_consejos.png' %}" alt="Metal">
+                {% else %}
+                    <img src="{% static 'img/earth.webp' %}" alt="Planeta">
+                {% endif %}
+                <h3>Consejo - Metal</h3>
+                <p>{{ consejos.3 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
