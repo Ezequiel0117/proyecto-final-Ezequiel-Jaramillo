@@ -9,18 +9,35 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="{% static 'css/mapa.css' %}">
 
+<div class="titulo-banner">
+    <h1>📍 Mapa de Reciclaje</h1>
+</div>
 
-  <div class="titulo-banner">
-      <h1>📍 Mapa de Reciclaje</h1></p>
-  </div>
+<!-- Toast Notification Container -->
+<div id="toast-container" class="toast-container"></div>
 
 {% if user.is_superuser %}
+<div class="coordenadas-selector">
+  <h4>🎯 Selector de Coordenadas</h4>
+  <p>Haz clic en el botón para activar el modo de selección, luego haz clic en el mapa para obtener las coordenadas.</p>
+  <button id="btnSelectorCoordenadas" class="btn-selector" onclick="toggleSelectorCoordenadas()">
+    <i class="fas fa-crosshairs"></i> Activar Selector
+  </button>
+  <button class="btn-selector" onclick="limpiarSeleccion()">
+    <i class="fas fa-eraser"></i> Limpiar
+  </button>
+  <div id="coordenadasInfo" class="coordenadas-info" style="display: none;">
+    <strong>📍 Coordenadas seleccionadas:</strong><br>
+    <span id="coordenadasTexto">Latitud: -, Longitud: -</span>
+  </div>
+</div>
+
 <div class="formulario-mapa">
   <input type="text" id="provincia" placeholder="Provincia (ej: Guayas)" autocomplete="off"/>
   <input type="text" id="ciudad" placeholder="Ciudad (ej: Guayaquil)" autocomplete="off"/>
   <input type="text" id="nombre" placeholder="Nombre del punto" autocomplete="off"/>
-  <input type="text" id="lat" placeholder="Latitud (ej: -2.189)" autocomplete="off"/>
-  <input type="text" id="lng" placeholder="Longitud (ej: -79.889)" autocomplete="off"/>
+  <input type="text" id="lat" placeholder="Latitud (ej: -2.189)" autocomplete="off" readonly/>
+  <input type="text" id="lng" placeholder="Longitud (ej: -79.889)" autocomplete="off" readonly/>
   <input type="text" id="tipo" placeholder="Tipo de reciclaje (ej: Papel)" autocomplete="off"/>
   <input type="text" id="peso" placeholder="Peso promedio (ej: 10kg/día)" autocomplete="off"/>
   <button onclick="agregarMarcador()">Agregar Marcador</button>
@@ -106,6 +123,8 @@
 
 <script>
   const marcadores = [];
+  let modoSelector = false;
+  let marcadorTemporal = null;
 
   document.cookie = "csrftoken={{ csrf_token }}";
 
@@ -113,6 +132,57 @@
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "© OpenStreetMap contributors",
   }).addTo(map);
+
+  // Toast Notification Function
+  function showToast(message, type = 'success') {
+    const toastContainer = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+      <span>${message}</span>
+      <button onclick="this.parentElement.remove()" class="toast-close">×</button>
+    `;
+    toastContainer.appendChild(toast);
+
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // Map click event listener
+  map.on('click', function(e) {
+    if (modoSelector) {
+      const lat = e.latlng.lat.toFixed(6);
+      const lng = e.latlng.lng.toFixed(6);
+      
+      document.getElementById('lat').value = lat;
+      document.getElementById('lng').value = lng;
+      
+      document.getElementById('coordenadasTexto').textContent = `Latitud: ${lat}, Longitud: ${lng}`;
+      document.getElementById('coordenadasInfo').style.display = 'block';
+      
+      if (marcadorTemporal) {
+        map.removeLayer(marcadorTemporal);
+      }
+      
+      marcadorTemporal = L.marker([lat, lng], {
+        icon: L.divIcon({
+          className: 'marcador-temporal',
+          html: '<div style="background: #dc3545; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>',
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        })
+      }).addTo(map);
+      
+      map.setView([lat, lng], map.getZoom());
+      
+      setTimeout(() => {
+        toggleSelectorCoordenadas();
+      }, 1000);
+    }
+  });
 
   {% for punto in puntos %}
     const marker_{{ punto.id }} = L.marker([{{ punto.latitud }}, {{ punto.longitud }}])
@@ -131,12 +201,14 @@
         </div>
       `)
       .on("click", function () {
-        map.setView([{{ punto.latitud }}, {{ punto.longitud }}], 16);
-        this.openPopup();
+        if (!modoSelector) {
+          map.setView([{{ punto.latitud }}, {{ punto.longitud }}], 16);
+          this.openPopup();
 
-        const icon = this._icon;
-        icon.classList.add('bounce');
-        setTimeout(() => icon.classList.remove('bounce'), 500);
+          const icon = this._icon;
+          icon.classList.add('bounce');
+          setTimeout(() => icon.classList.remove('bounce'), 500);
+        }
       });
 
     marker_{{ punto.id }}.tipoResiduo = "{{ punto.materiales|lower }}";
@@ -145,6 +217,49 @@
     marcadores.push(marker_{{ punto.id }});
   {% endfor %}
 
+  function toggleSelectorCoordenadas() {
+    modoSelector = !modoSelector;
+    const btn = document.getElementById('btnSelectorCoordenadas');
+    const mapContainer = document.getElementById('map');
+    
+    if (modoSelector) {
+      btn.innerHTML = '<i class="fas fa-times"></i> Desactivar Selector';
+      btn.classList.add('active');
+      mapContainer.style.cursor = 'crosshair';
+      mapContainer.classList.remove('modo-normal');
+      
+      const popup = L.popup()
+        .setLatLng(map.getCenter())
+        .setContent('<div style="text-align: center;"><strong>🎯 Modo Selector Activado</strong><br>Haz clic en cualquier lugar del mapa para seleccionar coordenadas</div>')
+        .openOn(map);
+        
+      setTimeout(() => {
+        map.closePopup();
+      }, 3000);
+      
+    } else {
+      btn.innerHTML = '<i class="fas fa-crosshairs"></i> Activar Selector';
+      btn.classList.remove('active');
+      mapContainer.style.cursor = '';
+      mapContainer.classList.add('modo-normal');
+    }
+  }
+
+  function limpiarSeleccion() {
+    document.getElementById('lat').value = '';
+    document.getElementById('lng').value = '';
+    
+    document.getElementById('coordenadasInfo').style.display = 'none';
+    
+    if (marcadorTemporal) {
+      map.removeLayer(marcadorTemporal);
+      marcadorTemporal = null;
+    }
+    
+    if (modoSelector) {
+      toggleSelectorCoordenadas();
+    }
+  }
 
   function agregarMarcador() {
     const lat = parseFloat(document.getElementById("lat").value);
@@ -156,7 +271,7 @@
     const ciudad = document.getElementById("ciudad").value;
 
     if (!provincia || !ciudad || isNaN(lat) || isNaN(lng) || !nombre || !tipo || !peso) {
-      alert("Por favor completa todos los campos correctamente.");
+      showToast("Por favor completa todos los campos correctamente. Usa el selector de coordenadas para obtener la latitud y longitud.", 'error');
       return;
     }
 
@@ -183,7 +298,11 @@
     .then((res) => res.json())
     .then((data) => {
       if (data.status === "ok") {
-        // ✅ Agregar marcador dinámicamente al mapa
+        if (marcadorTemporal) {
+          map.removeLayer(marcadorTemporal);
+          marcadorTemporal = null;
+        }
+        
         const marker = L.marker([lat, lng])
           .addTo(map)
           .bindPopup(`
@@ -203,13 +322,14 @@
             </div>
           `)
           .on("click", function () {
-            map.setView([lat, lng], 16);
-            this.openPopup();
+            if (!modoSelector) {
+              map.setView([lat, lng], 16);
+              this.openPopup();
+            }
           });
 
         marker.openPopup();
 
-        // ✅ Agregar nueva fila a la tabla (si aplica para superusuario)
         const fila = document.createElement("tr");
         fila.setAttribute("data-id", data.id);
         fila.innerHTML = `
@@ -228,9 +348,19 @@
         const tabla = document.getElementById("listaPuntos");
         if (tabla) tabla.appendChild(fila);
 
-        alert("✅ Punto guardado con éxito");
+        document.getElementById("provincia").value = "";
+        document.getElementById("ciudad").value = "";
+        document.getElementById("nombre").value = "";
+        document.getElementById("lat").value = "";
+        document.getElementById("lng").value = "";
+        document.getElementById("tipo").value = "";
+        document.getElementById("peso").value = "";
+        
+        document.getElementById('coordenadasInfo').style.display = 'none';
+
+        showToast("✅ Punto guardado con éxito", 'success');
       } else {
-        alert("❌ Error al guardar: " + data.mensaje);
+        showToast("❌ Error al guardar: " + data.mensaje, 'error');
       }
     });
   }
@@ -247,15 +377,14 @@
       if (data.status === "ok") {
         document.querySelector(`tr[data-id='${id}']`).remove();
 
-        // ❌ Quitar marcador del mapa
         if (marcadores[id]) {
           map.removeLayer(marcadores[id]);
           delete marcadores[id];
         }
 
-        alert("✅ Punto eliminado correctamente.");
+        showToast("✅ Punto eliminado correctamente", 'success');
       } else {
-        alert("❌ Error al eliminar.");
+        showToast("❌ Error al eliminar", 'error');
       }
     });
   }
@@ -299,5 +428,6 @@
     });
   }
 
+  document.getElementById('map').classList.add('modo-normal');
 </script>
 {% endblock %}
