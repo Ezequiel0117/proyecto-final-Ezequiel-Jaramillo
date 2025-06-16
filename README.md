@@ -9,6 +9,9 @@
 _EcoSoft_ es una plataforma web desarrollada en Django que utiliza inteligencia artificial (YOLO) para la clasificación automática de residuos sólidos urbanos. Permite a los usuarios identificar el tipo de residuo (plástico, papel, vidrio, metal) a través de imágenes, visualizar información ambiental relevante y localizar puntos de reciclaje cercanos.
 
 ![image](https://github.com/user-attachments/assets/c18279f7-cb34-4549-b97b-af9ff645512c)
+![image](https://github.com/user-attachments/assets/cce96964-90b2-44dc-bf22-f160f9a278ed)
+![image](https://github.com/user-attachments/assets/6f56c940-0d23-4f4d-bc77-9b21a58945a8)
+
 
 
 ## Características principales
