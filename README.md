@@ -10,7 +10,8 @@ _EcoSoft_ es una plataforma web desarrollada en Django que utiliza inteligencia 
 
 ![image](https://github.com/user-attachments/assets/c18279f7-cb34-4549-b97b-af9ff645512c)
 ![image](https://github.com/user-attachments/assets/cce96964-90b2-44dc-bf22-f160f9a278ed)
-![image](https://github.com/user-attachments/assets/6f56c940-0d23-4f4d-bc77-9b21a58945a8)
+![image](https://github.com/user-attachments/assets/8ab12742-08bf-4bc0-b971-cc0af6974e2b)
+
 
 
 
