@@ -15,8 +15,9 @@ def history(request):
     media_path = os.path.join(settings.MEDIA_ROOT, 'residuos')
     history_items = []
     filter_residue = request.GET.get('residue', '').lower()
+    show_all = request.GET.get('show_all', '').lower() == 'true'
 
-    # Consistentes y sin tildes
+    # Contadores de residuos (para todas las clasificaciones)
     residue_counts = {'plastico': 0, 'vidrio': 0, 'papel': 0, 'metal': 0}
 
     traducciones = {
@@ -30,10 +31,13 @@ def history(request):
         'metal': 'metal'
     }
 
-    img_instances = ImagenResiduo.objects.filter(user=request.user).order_by('-creado')
-    logger.debug(f"Found {img_instances.count()} ImagenResiduo objects for user {request.user.username}")
+    # Consulta inicial - obtener todos para calcular contadores
+    all_img_instances = ImagenResiduo.objects.filter(user=request.user).order_by('-creado')
+    logger.debug(f"Found {all_img_instances.count()} ImagenResiduo objects for user {request.user.username}")
 
-    for img_instance in img_instances:
+    # Procesar todos los elementos para calcular contadores
+    all_history_items = []
+    for img_instance in all_img_instances:
         try:
             filename = os.path.basename(img_instance.imagen.name)
             file_path = os.path.join(media_path, filename)
@@ -72,33 +76,46 @@ def history(request):
                     else:
                         logger.warning(f"Failed to parse result part: '{part}'")
                         continue
-                unique_residues = [r['residue'] for r in residues_with_count]
             else:
                 logger.warning(f"Empty or null resultado for ImagenResiduo: ID={img_instance.id}")
                 if total_count > 0:
                     residues_with_count = [{'residue': 'Desconocido', 'count': total_count}]
-                    unique_residues = ['Desconocido']
                 else:
                     residues_with_count = [{'residue': 'Desconocido', 'count': 0}]
-                    unique_residues = ['Desconocido']
-
-            if filter_residue and not any(res['residue'].lower() == filter_residue for res in residues_with_count):
-                continue
 
             local_tz = pytz.timezone(settings.TIME_ZONE)
             local_time = img_instance.creado.astimezone(local_tz)
 
-            history_items.append({
+            history_item = {
                 'timestamp': local_time.strftime('%d/%m/%Y, %H:%M'),
                 'residues': residues_with_count,
-                'weight': f"{total_count * 0.1:.1f}kg"
-            })
+                'weight': f"{total_count * 0.1:.1f}kg",
+                'residue_types': [r['residue'].lower() for r in residues_with_count]  # Para filtrado
+            }
+            all_history_items.append(history_item)
 
         except Exception as e:
             logger.error(f"Error con imagen {img_instance.id}: {e}")
             continue
 
+    # Filtrar los elementos según el filtro aplicado
+    if filter_residue and not show_all:
+        # Filtrar por tipo de residuo específico
+        filtered_items = []
+        for item in all_history_items:
+            # Verificar si alguno de los residuos del item coincide con el filtro
+            if any(filter_residue in residue_type for residue_type in item['residue_types']):
+                filtered_items.append(item)
+        history_items = filtered_items
+        logger.debug(f"Filtered by residue '{filter_residue}': {len(history_items)} items")
+    else:
+        # Mostrar todos los elementos
+        history_items = all_history_items
+
     logger.debug(f"Final residue counts: {residue_counts}")
+    logger.debug(f"Total items to paginate: {len(history_items)}")
+    
+    # Paginación basada en los elementos filtrados
     paginator = Paginator(history_items, 16)
     page = request.GET.get('page')
     try:
@@ -111,5 +128,6 @@ def history(request):
     return render(request, 'historial/history.html', {
         'history_items': history_items_page,
         'residue_counts': residue_counts,
-        'filter_residue': filter_residue
+        'filter_residue': filter_residue,
+        'show_all': show_all
     })
