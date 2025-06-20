@@ -128,7 +128,6 @@ Fecha: {fecha_actual}"""
         
         ax_header.axhline(y=0.1, xmin=0.1, xmax=0.9, color='#34495e', linewidth=2)
         
-        # 2. RESUMEN PRINCIPAL
         ax_summary = fig.add_subplot(gs[1, :])
         ax_summary.axis('off')
         

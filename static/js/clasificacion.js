@@ -14,7 +14,6 @@ let usarCamara = false;
 let stream = null;
 let deteccionInterval = null;
 
-// Configurar el canvas para superponerse al video
 canvas.style.position = 'absolute';
 canvas.style.top = '0';
 canvas.style.left = '0';
@@ -133,7 +132,6 @@ function startDeteccionTiempoReal() {
               ctx.font = "20px Arial";
               ctx.fillStyle = "lime";
 
-              // Agrupar detecciones por clase y calcular confianza promedio
               const residuosAgrupados = {};
               data.detecciones.forEach((det) => {
                 const clase = det.clase.toLowerCase();
@@ -143,14 +141,12 @@ function startDeteccionTiempoReal() {
                 residuosAgrupados[clase].confidences.push(det.confidence);
                 residuosAgrupados[clase].boxes.push(det.box);
 
-                // Dibujar rectángulo y etiqueta para cada detección
                 const [x_min, y_min, x_max, y_max] = det.box;
                 const label = `${det.clase} (${(det.confidence * 100).toFixed(1)}%)`;
                 ctx.strokeRect(x_min, y_min, x_max - x_min, y_max - y_min);
                 ctx.fillText(label, x_min, y_min - 10);
               });
 
-              // Procesar cada clase única
               Object.keys(residuosAgrupados).forEach((clase) => {
                 const confidences = residuosAgrupados[clase].confidences;
                 // Calcular confianza promedio

@@ -15,19 +15,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 const reader = new FileReader();
 
                 reader.onload = function (e) {
-                    previewImg.src = e.target.result; // Vista previa local
+                    previewImg.src = e.target.result; 
                 };
 
                 reader.readAsDataURL(file);
                 changePictureBtn.innerHTML = `<i class="fas fa-camera me-1"></i> ${file.name}`;
             } else {
-                // Restaurar imagen por defecto si no hay archivo seleccionado
                 previewImg.src = '{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static "img/user.webp" %}{% endif %}';
                 changePictureBtn.innerHTML = `<i class="fas fa-camera me-1"></i> Cambiar foto de perfil`;
             }
         });
 
-        // Actualizar vista previa después de guardar
         form.addEventListener('submit', function (e) {
             setTimeout(() => {
                 if (request.user.profile_picture) {
@@ -35,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     previewImg.src = '{% static "img/user.webp" %}';
                 }
-            }, 100); // Pequeño retraso para permitir que la vista se actualice
+            }, 100); 
         });
     }
 });

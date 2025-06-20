@@ -1,17 +1,12 @@
-// 🌿 Dashboard EcoSoft - JavaScript
-// Universidad Nacional de Educación (UNEMI) 2025
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Dashboard EcoSoft cargado correctamente');
-    
-    // Verificar si el usuario está autenticado
+
     const titleBanner = document.querySelector('.titulo-banner');
     if (!titleBanner) {
         console.log('Usuario no autenticado - Dashboard público');
         return;
     }
 
-    // Cargar datos del dashboard para usuarios autenticados
     cargarDatosDashboard();
 });
 
@@ -37,13 +32,11 @@ function cargarDatosDashboard() {
             const impacto = data.impacto;
             const progreso = data.progreso;
 
-            // Verificar si hay datos para mostrar
             if (resumen.residuos_clasificados === 0) {
                 mostrarMensajeSinDatos();
                 return;
             }
 
-            // Generar los gráficos
             crearGraficoResumen(resumen);
             crearGraficoImpacto(impacto);
             crearBarraProgreso(progreso);
@@ -85,8 +78,7 @@ function mostrarMensajeSinDatos() {
 
 function crearGraficoResumen(resumen) {
     console.log('Creando gráfico de resumen mensual...');
-    
-    // Limpiar contenedor previo
+
     d3.select("#grafico-resumen").selectAll("*").remove();
     
     const datosResumen = [
@@ -96,7 +88,6 @@ function crearGraficoResumen(resumen) {
         { tipo: "Metal", valor: resumen.metal || 0, color: "#C8E6C9", icon: "⚙️" }
     ];
 
-    // Filtrar datos con valores mayores a 0
     const datosConValores = datosResumen.filter(d => d.valor > 0);
     
     if (datosConValores.length === 0) {
@@ -107,7 +98,6 @@ function crearGraficoResumen(resumen) {
         return;
     }
 
-    // Configuración del SVG
     const containerWidth = document.getElementById('grafico-resumen').clientWidth || 400;
     const svgWidth = Math.min(containerWidth, 450);
     const svgHeight = 280;
@@ -125,7 +115,6 @@ function crearGraficoResumen(resumen) {
     const g = svg.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Escalas
     const x = d3.scaleLinear()
         .domain([0, d3.max(datosConValores, d => d.valor) * 1.1])
         .range([0, width]);
@@ -135,7 +124,6 @@ function crearGraficoResumen(resumen) {
         .range([0, height])
         .padding(0.3);
 
-    // Crear barras con animación
     const barras = g.selectAll(".bar")
         .data(datosConValores)
         .enter()
@@ -156,7 +144,6 @@ function crearGraficoResumen(resumen) {
         .delay((d, i) => i * 200)
         .attr("width", d => x(d.valor));
 
-    // Etiquetas de valores
     barras.append("text")
         .attr("class", "bar-label")
         .attr("x", d => x(d.valor) + 5)
@@ -172,7 +159,6 @@ function crearGraficoResumen(resumen) {
         .delay((d, i) => i * 200 + 500)
         .style("opacity", 1);
 
-    // Eje X
     g.append("g")
         .attr("transform", `translate(0,${height})`)
         .call(d3.axisBottom(x).ticks(5).tickFormat(d => `${d} kg`))
@@ -180,7 +166,6 @@ function crearGraficoResumen(resumen) {
         .attr("font-size", "10px")
         .attr("fill", "#666");
 
-    // Eje Y con iconos
     const yAxis = g.append("g")
         .call(d3.axisLeft(y))
         .selectAll("text")
@@ -192,7 +177,6 @@ function crearGraficoResumen(resumen) {
 function crearGraficoImpacto(impacto) {
     console.log('Creando gráfico de impacto ecológico...');
     
-    // Limpiar contenedores previos
     d3.select("#grafico-impacto").selectAll("*").remove();
     d3.select("#legend-impacto").selectAll("*").remove();
     
@@ -227,7 +211,6 @@ function crearGraficoImpacto(impacto) {
         }
     ];
 
-    // Filtrar datos con valores mayores a 0
     const datosConValores = datosImpacto.filter(d => d.value > 0);
     
     if (datosConValores.length === 0) {
@@ -238,7 +221,6 @@ function crearGraficoImpacto(impacto) {
         return;
     }
 
-    // Configuración del pie chart
     const svgWidth = 300;
     const svgHeight = 250;
     const radius = Math.min(svgWidth, svgHeight) / 2 - 20;
@@ -253,7 +235,6 @@ function crearGraficoImpacto(impacto) {
     const g = svg.append("g")
         .attr("transform", `translate(${svgWidth/2},${svgHeight/2})`);
 
-    // Configuración del pie
     const pie = d3.pie()
         .value(d => d.value)
         .sort(null);
@@ -300,7 +281,6 @@ function crearGraficoImpacto(impacto) {
             };
         });
 
-    // Crear leyenda mejorada
     const legendContainer = d3.select("#legend-impacto");
     
     datosConValores.forEach((d, i) => {
@@ -327,16 +307,14 @@ function crearGraficoImpacto(impacto) {
 function crearBarraProgreso(progreso) {
     console.log('Creando barra de progreso...');
     
-    // Limpiar contenedor previo
     d3.select("#grafico-progreso").selectAll("*").remove();
     
-    const meta = 60; // Meta mensual de residuos
+    const meta = 60;
     const actual = progreso.actual || 0;
     const porcentaje = Math.min(Math.round((actual / meta) * 100), 100);
     
     const container = d3.select("#grafico-progreso");
     
-    // Contenedor principal de la barra
     const progressContainer = container
         .append("div")
         .attr("class", "progress-bar")
@@ -345,7 +323,6 @@ function crearBarraProgreso(progreso) {
         .style("max-width", "500px")
         .style("margin", "0 auto");
     
-    // Barra de fondo
     progressContainer
         .style("height", "40px")
         .style("background", "linear-gradient(90deg, #e0e0e0, #f5f5f5)")
@@ -353,7 +330,6 @@ function crearBarraProgreso(progreso) {
         .style("overflow", "hidden")
         .style("box-shadow", "inset 0 2px 4px rgba(0, 0, 0, 0.1)");
     
-    // Barra de progreso
     const progressFill = progressContainer
         .append("div")
         .attr("class", "progress-fill")
@@ -365,7 +341,6 @@ function crearBarraProgreso(progreso) {
         .style("overflow", "hidden")
         .style("transition", "width 1.5s ease-in-out");
     
-    // Animación de brillo
     progressFill
         .append("div")
         .style("position", "absolute")
@@ -375,8 +350,7 @@ function crearBarraProgreso(progreso) {
         .style("height", "100%")
         .style("background", "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)")
         .style("animation", "progressShine 2s infinite");
-    
-    // Texto de progreso
+
     const progressText = progressContainer
         .append("div")
         .attr("class", "progress-text")
@@ -390,13 +364,11 @@ function crearBarraProgreso(progreso) {
         .style("text-shadow", "0 1px 2px rgba(255, 255, 255, 0.8)")
         .style("z-index", "1")
         .text(`${porcentaje}% (${actual}/${meta} residuos)`);
-    
-    // Animar la barra de progreso
+
     setTimeout(() => {
         progressFill.style("width", `${porcentaje}%`);
     }, 500);
-    
-    // Estadísticas adicionales
+
     const statsContainer = container
         .append("div")
         .attr("class", "progress-stats")
@@ -444,8 +416,7 @@ function crearBarraProgreso(progreso) {
             .style("color", "#666")
             .style("margin-top", "4px")
             .text(stat.label);
-        
-        // Animar aparición de estadísticas
+
         setTimeout(() => {
             statItem
                 .style("opacity", "1")
@@ -454,15 +425,12 @@ function crearBarraProgreso(progreso) {
     });
 }
 
-// Función auxiliar para formatear números
 function formatearNumero(numero) {
     if (numero >= 1000) {
         return (numero / 1000).toFixed(1) + 'k';
     }
     return numero.toString();
 }
-
-// Función para hacer el dashboard responsive
 function ajustarTamanoGraficos() {
     const cards = document.querySelectorAll('.card, .card-full');
     cards.forEach(card => {
@@ -474,10 +442,8 @@ function ajustarTamanoGraficos() {
     });
 }
 
-// Escuchar cambios de tamaño de ventana
 window.addEventListener('resize', ajustarTamanoGraficos);
 
-// Mensaje de bienvenida en consola
 console.log(`
 🌿 EcoSoft Dashboard v2.0
 🎓 Universidad Nacional de Educación (UNEMI) 2025
