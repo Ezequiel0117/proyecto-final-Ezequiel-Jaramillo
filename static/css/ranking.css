@@ -11,7 +11,7 @@
 .ranking-table th, .ranking-table td {
     padding: 14px 12px;
     text-align: left;
-    border-bottom: 2px solid #e0e0e0; /* Líneas divisorias más marcadas */
+    border-bottom: 2px solid #e0e0e0;
 }
 
 .ranking-table th {
@@ -55,15 +55,15 @@
 }
 
 .ranking-table .gold .crown {
-    color: #FFD700; /* Oro */
+    color: #FFD700;
 }
 
 .ranking-table .silver .crown {
-    color: #C0C0C0; /* Plata */
+    color: #C0C0C0;
 }
 
 .ranking-table .bronze .crown {
-    color: #CD7F32; /* Bronce */
+    color: #CD7F32;
 }
 
 .ranking-table tbody tr {

@@ -2,30 +2,25 @@
 {% load static %}
 {% block title %}Dashboard - EcoSoft{% endblock %}
 {% block content %}
-<!-- Google Fonts -->
 <link
-  href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap"
   rel="stylesheet"
 />
-<!-- Font Awesome -->
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
 />
-<!-- Custom CSS -->
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 
 <div class="dashboard-container">
   {% if user.is_authenticated %}
-    <!-- Contenido del dashboard para usuarios autenticados -->
     <div class="titulo-banner">
-      <h1>Bienvenido {{ user.username }} - EcoSoft</h2>
+      <h2>Bienvenido {{ user.username }} - EcoSoft</h2>
       <p>Sigue tu impacto en el reciclaje y contribuye a un futuro sostenible.</p>
     </div>
 
     <div class="card-container">
       <div class="card-grid">
-        <!-- Impacto Ecológico -->
         <div class="card">
           <div class="card-header">
             <h3>
@@ -43,7 +38,6 @@
           </div>
         </div>
 
-        <!-- Resumen Mensual -->
         <div class="card">
           <div class="card-header">
             <h3>
@@ -64,7 +58,6 @@
         </div>
       </div>
 
-      <!-- Progreso de Residuos Mensuales -->
       <div class="card-full">
         <div class="card-header">
           <h3>
@@ -83,32 +76,117 @@
       </div>
     </div>
   {% else %}
-    <!-- Contenido para usuarios no autenticados -->
     <div class="welcome-container">
-      <div class="project-description">
-        <h2>Bienvenido a EcoSoft - Proyecto UNEMI 2025</h2>
-        <p>
-          EcoSoft es una innovadora iniciativa desarrollada por la Universidad Nacional de Educación (UNEMI) en 2025, diseñada para abordar el creciente problema de la contaminación y el manejo inadecuado de residuos a través de la tecnología. Este proyecto utiliza inteligencia artificial y aprendizaje automático para clasificar residuos de manera precisa, promoviendo el reciclaje y la sostenibilidad. Nuestro objetivo es empoderar a las comunidades para que reduzcan su huella ecológica, fomentando un cambio positivo hacia un futuro más verde.
-        </p>
-        <p>
-          La plataforma permite a los usuarios registrar y clasificar sus residuos, obtener métricas de impacto ambiental (como reducción de CO₂ y equivalentes en árboles salvados), y participar en un ranking de reciclaje. ¡Únete a nosotros para transformar el mundo, un residuo a la vez!
-        </p>
-        <a href="{% url 'signin' %}" class="btn-primary">
-          <i class="fas fa-sign-in-alt me-1"></i> Inicia Sesión o Regístrate
-        </a>
+      <div class="floating-particles">
+        <div class="particle">🌿</div>
+        <div class="particle">♻️</div>
+        <div class="particle">🌍</div>
+        <div class="particle">🌱</div>
       </div>
-      <div class="pollution-gallery">
-        <img src="{% static 'img/contamicacion_aire.jpg' %}" alt="Aire contaminado" class="gallery-item">
-        <img src="{% static 'img/contamicacion_c.jpeg' %}" alt="Vertederos de basura" class="gallery-item">
-        <img src="{% static 'img/contaminacion-b-de-agua1.jpg' %}" alt="Ríos contaminados" class="gallery-item">
-        <img src="{% static 'img/plasticos_c.jpg' %}" alt="Contaminación por plásticos" class="gallery-item">
+      
+      <div class="hero-section">
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1>Bienvenido a <span class="highlight">EcoSoft</span></h1>
+            <p>
+              Transformamos el futuro del reciclaje con inteligencia artificial avanzada. 
+              Una iniciativa de la Universidad Nacional de Educación (UNEMI) para crear 
+              un mundo más sostenible.
+            </p>
+            
+            <div class="hero-features">
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <span>Clasificación inteligente con IA de última generación</span>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fas fa-leaf"></i>
+                </div>
+                <span>Impacto ambiental medible y significativo</span>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="fas fa-users"></i>
+                </div>
+                <span>Comunidad comprometida con la sostenibilidad</span>
+              </div>
+            </div>
+            
+            <a href="{% url 'signin' %}" class="cta-button">
+              <i class="fas fa-rocket"></i>
+              Comenzar mi Viaje Verde
+            </a>
+          </div>
+          
+          <div class="hero-visual">
+            <div class="tech-showcase">
+              <h3 class="tech-title">Tecnología Avanzada</h3>
+              <div class="tech-grid">
+                <div class="tech-item">
+                  <div class="tech-icon">🤖</div>
+                  <div class="tech-label">Inteligencia Artificial</div>
+                </div>
+                <div class="tech-item">
+                  <div class="tech-icon">📊</div>
+                  <div class="tech-label">Análisis Predictivo</div>
+                </div>
+                <div class="tech-item">
+                  <div class="tech-icon">🔍</div>
+                  <div class="tech-label">Visión Computacional</div>
+                </div>
+                <div class="tech-item">
+                  <div class="tech-icon">⚡</div>
+                  <div class="tech-label">Procesamiento Rápido</div>
+                </div>
+              </div>
+              <div class="mission-banner">
+                <p class="mission-text">
+                  "Cada residuo clasificado correctamente es un paso hacia un planeta más limpio. 
+                  Únete a la revolución verde y sé parte del cambio que el mundo necesita."
+                </p>
+              </div>
+            </div>
+            
+            <div class="pollution-gallery">
+              <div class="gallery-card">
+                <img src="{% static 'img/contamicacion_aire.jpg' %}" alt="Aire contaminado" class="gallery-item">
+                <div class="gallery-overlay">
+                  <div class="overlay-title">Contaminación del Aire</div>
+                  <div class="overlay-text">Reducimos emisiones con reciclaje inteligente</div>
+                </div>
+              </div>
+              <div class="gallery-card">
+                <img src="{% static 'img/contamicacion_c.jpeg' %}" alt="Vertederos de basura" class="gallery-item">
+                <div class="gallery-overlay">
+                  <div class="overlay-title">Vertederos Saturados</div>
+                  <div class="overlay-text">Clasificación precisa para menos desperdicios</div>
+                </div>
+              </div>
+              <div class="gallery-card">
+                <img src="{% static 'img/contaminacion-b-de-agua1.jpg' %}" alt="Ríos contaminados" class="gallery-item">
+                <div class="gallery-overlay">
+                  <div class="overlay-title">Contaminación Acuática</div>
+                  <div class="overlay-text">Prevenimos residuos en ecosistemas marinos</div>
+                </div>
+              </div>
+              <div class="gallery-card">
+                <img src="{% static 'img/plasticos_c.jpg' %}" alt="Contaminación por plásticos" class="gallery-item">
+                <div class="gallery-overlay">
+                  <div class="overlay-title">Crisis del Plástico</div>
+                  <div class="overlay-text">IA especializada en identificación de polímeros</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   {% endif %}
 </div>
 
-<!-- D3.js -->
 <script src="https://d3js.org/d3.v7.min.js"></script>
-<!-- Cargar el archivo JavaScript externo -->
 <script src="{% static 'js/dashboard.js' %}?v=2.0"></script>
 {% endblock %}

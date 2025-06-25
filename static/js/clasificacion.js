@@ -6,6 +6,7 @@ const camaraSeccion = document.getElementById("camaraSeccion");
 const previewImg = document.getElementById("previewImg");
 const modoCamaraBtn = document.getElementById("modoCamaraBtn");
 const modoArchivoBtn = document.getElementById("modoArchivoBtn");
+const clasificarDeNuevoBtn = document.getElementById("clasificarDeNuevoBtn");
 const resultadosCamara = document.getElementById("resultadosCamara");
 const infoResiduos = document.getElementById("infoResiduos");
 const clasificarBtn = document.getElementById("clasificarBtn");
@@ -13,17 +14,67 @@ const clasificarBtn = document.getElementById("clasificarBtn");
 let usarCamara = false;
 let stream = null;
 let deteccionInterval = null;
+let clasificacionRealizada = false;
 
 canvas.style.position = 'absolute';
 canvas.style.top = '0';
 canvas.style.left = '0';
 canvas.style.pointerEvents = 'none';
 
+function mostrarBotonesIniciales() {
+  modoCamaraBtn.style.display = "inline-block";
+  modoArchivoBtn.style.display = "inline-block";
+  clasificarDeNuevoBtn.style.display = "none";
+  clasificarBtn.style.display = "inline-block";
+  clasificacionRealizada = false;
+}
+
+function mostrarBotonClasificarDeNuevo() {
+  modoCamaraBtn.style.display = "none";
+  modoArchivoBtn.style.display = "none";
+  clasificarDeNuevoBtn.style.display = "inline-block";
+  clasificarBtn.style.display = "none";
+  clasificacionRealizada = true;
+}
+
+function resetearInterfaz() {
+  if (stream) {
+    stream.getTracks().forEach((t) => t.stop());
+    stream = null;
+  }
+  if (deteccionInterval) {
+    clearInterval(deteccionInterval);
+    deteccionInterval = null;
+  }
+  
+  camaraSeccion.style.display = "none";
+  
+  previewImg.style.display = "block";
+  
+  imagenInput.value = "";
+  
+  const defaultImage = "/static/img/camera.png";
+  previewImg.src = defaultImage;
+  
+  resultadosCamara.innerHTML = '<p id="textoResultados">Clasifica una imagen o usa la cámara para ver el tipo de residuo.</p>';
+  infoResiduos.innerHTML = '<p>No se tiene información para este tipo de residuo.</p>';
+  
+  mostrarBotonesIniciales();
+  
+  usarCamara = false;
+}
+
+clasificarDeNuevoBtn.addEventListener("click", () => {
+  resetearInterfaz();
+});
+
 modoCamaraBtn.addEventListener("click", () => {
   usarCamara = true;
   camaraSeccion.style.display = "block";
   previewImg.style.display = "none";
   clasificarBtn.innerHTML = "📷";
+  clasificarBtn.style.display = "inline-block";
+  
   navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
     .then((s) => {
       stream = s;
@@ -44,9 +95,17 @@ modoCamaraBtn.addEventListener("click", () => {
 modoArchivoBtn.addEventListener("click", () => {
   usarCamara = false;
   camaraSeccion.style.display = "none";
+  previewImg.style.display = "block";
   clasificarBtn.innerHTML = "Clasificar";
-  if (stream) stream.getTracks().forEach((t) => t.stop());
-  if (deteccionInterval) clearInterval(deteccionInterval);
+  clasificarBtn.style.display = "inline-block";
+  if (stream) {
+    stream.getTracks().forEach((t) => t.stop());
+    stream = null;
+  }
+  if (deteccionInterval) {
+    clearInterval(deteccionInterval);
+    deteccionInterval = null;
+  }
   imagenInput.click();
 });
 
@@ -75,8 +134,22 @@ formulario.addEventListener("submit", function (e) {
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
       imagenInput.files = dataTransfer.files;
+      
+      if (deteccionInterval) {
+        clearInterval(deteccionInterval);
+        deteccionInterval = null;
+      }
+      
+      setTimeout(() => {
+        mostrarBotonClasificarDeNuevo();
+      }, 1000);
+      
       formulario.submit();
     }, "image/jpeg", 0.7);
+  } else {
+    setTimeout(() => {
+      mostrarBotonClasificarDeNuevo();
+    }, 1000);
   }
 });
 
@@ -127,6 +200,7 @@ function startDeteccionTiempoReal() {
             }
 
             if (data.detecciones && data.detecciones.length > 0) {
+              
               ctx.strokeStyle = "lime";
               ctx.lineWidth = 2;
               ctx.font = "20px Arial";
@@ -149,7 +223,6 @@ function startDeteccionTiempoReal() {
 
               Object.keys(residuosAgrupados).forEach((clase) => {
                 const confidences = residuosAgrupados[clase].confidences;
-                // Calcular confianza promedio
                 const avgConfidence = confidences.reduce((a, b) => a + b, 0) / confidences.length;
                 const confPercent = (avgConfidence * 100).toFixed(1);
 
@@ -213,3 +286,10 @@ function startDeteccionTiempoReal() {
     }, "image/jpeg", 0.7);
   }, 300);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const resultados = resultadosCamara.innerHTML.trim();
+  if (resultados && !resultados.includes('Clasifica una imagen o usa la cámara')) {
+    mostrarBotonClasificarDeNuevo();
+  }
+});

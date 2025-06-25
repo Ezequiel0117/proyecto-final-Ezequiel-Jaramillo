@@ -2,27 +2,26 @@
 {% load static %}
 {% block title %} Clasificación - EcoSoft {% endblock %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/clasificacion.css' %}?v=1.8">
+<link rel="stylesheet" href="{% static 'css/clasificacion.css' %}">
 
 <h2 class="text-center mb-4">
   Clasificación de Residuos
 </h2>
 
 <div class="container">
-  <!-- 🗑️ TIPO DE RESIDUO -->
   <div class="recipiente-section">
     <h4>RECIPIENTE</h4>
     <div id="resultadosCamara">
       {% if residuos_con_confianza %}
         {% for residuo in residuos_con_confianza %}
           {% if residuo.clase == 'plastico' %}
-            <img src="{% static 'img/plastico.png' %}" alt="plastico" class="residuo-img"/>
+            <img src="{% static 'img/EC_PLASTICO.png' %}" alt="plastico" class="residuo-img"/>
           {% elif residuo.clase == 'papel' %}
-            <img src="{% static 'img/papel.png' %}" alt="papel" class="residuo-img"/>
+            <img src="{% static 'img/EC_PAPEL_CARTON.png' %}" alt="papel" class="residuo-img"/>
           {% elif residuo.clase == 'vidrio' %}
-            <img src="{% static 'img/vidrio.png' %}" alt="vidrio" class="residuo-img"/>
+            <img src="{% static 'img/EC_METAL_VIDRIO.png' %}" alt="vidrio" class="residuo-img"/>
           {% elif residuo.clase == 'metal' %}
-            <img src="{% static 'img/metal.png' %}" alt="metal" class="residuo-img"/>
+            <img src="{% static 'img/EC_METAL_VIDRIO.png' %}" alt="metal" class="residuo-img"/>
           {% else %}
             <p>No se tiene imagen para este tipo de residuo: {{ residuo.clase }}</p>
           {% endif %}
@@ -33,11 +32,11 @@
     </div>
   </div>
 
-  <!-- 📷 CÁMARA / SUBIR -->
   <div class="camera-section">
     <div class="button-group">
       <button id="modoCamaraBtn">📷 Usar cámara</button>
-      <button id="modoArchivoBtn">🖼️ Subir</button>
+      <button id="modoArchivoBtn">🖼️ Subir Imagen</button>
+      <button id="clasificarDeNuevoBtn" style="display: none;">🔄 Clasificar de nuevo</button>
     </div>
 
     <div id="previewBox">
@@ -56,7 +55,6 @@
     </form>
   </div>
 
-  <!-- ℹ️ INFORMACIÓN DEL RESIDUO -->
   <div class="info-section">
     <h4>INFORMACIÓN DEL RESIDUO</h4>
     <div id="infoResiduos">
@@ -91,17 +89,15 @@
     </div>
   </div>
 </div>
-<!-- Cargar el archivo JavaScript externo y pasar variables de Django -->
 <script>
-  // Pasar variables de Django al ámbito global para que clasificacion.js las use
   window.procesarFrameUrl = "{% url 'procesar_frame' %}";
   window.csrfToken = "{{ csrf_token }}";
   window.staticImages = {
-    plastico: "{% static 'img/plastico.png' %}",
-    papel: "{% static 'img/papel.png' %}",
-    vidrio: "{% static 'img/vidrio.png' %}",
-    metal: "{% static 'img/metal.png' %}"
+    plastico: "{% static 'img/EC_PLASTICO.png'' %}",
+    papel: "{% static 'img/EC_PAPEL_CARTON.png' %}",
+    vidrio: "{% static 'img/EC_METAL_VIDRIO.png' %}",
+    metal: "{% static 'img/EC_METAL_VIDRIO.png' %}"
   };
 </script>
-<script src="{% static 'js/clasificacion.js' %}?v=1.2"></script>
+<script src="{% static 'js/clasificacion.js' %}?v=1.3"></script>
 {% endblock %}

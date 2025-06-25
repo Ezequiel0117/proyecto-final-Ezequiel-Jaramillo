@@ -1,4 +1,3 @@
-/* Banner del título */
 .titulo-banner {
     width: 100%;
     background: linear-gradient(to right, #00986c, #56ab2f);
@@ -18,19 +17,17 @@
     margin: 0;
 }
 
-/* Animación */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Filter section */
 .filter-section {
     background: rgba(255, 255, 255, 0.95);
-    padding: 10px; /* Reducido de 15px */
+    padding: 10px;
     border-radius: 20px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-    margin-bottom: 20px; /* Reducido de 30px */
+    margin-bottom: 20px;
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.4);
     width: 100%;
@@ -44,23 +41,22 @@
 }
 
 .filter-section .d-flex {
-    gap: 10px; /* Reducido de 15px */
+    gap: 10px;
     align-items: flex-end;
 }
 
-/* Form elements */
 .history-form-label {
     font-weight: 700;
     color: #2c3e50;
     margin-bottom: 5px;
     font-size: 0.9rem;
-    text-align: left; /* Cambiado de center para mejor alineación */
+    text-align: left;
 }
 
 .history-form-control {
     border-radius: 10px;
     border: 2px solid #e9ecef;
-    padding: 8px 10px; /* Reducido de 10px 12px */
+    padding: 8px 10px;
     transition: all 0.3s ease;
     background: rgba(255, 255, 255, 0.95);
     font-size: 0.8rem;
@@ -71,13 +67,13 @@
 .history-form-select {
     border-radius: 10px;
     border: 2px solid #e9ecef;
-    padding: 8px 10px; /* Reducido de 10px 12px */
+    padding: 8px 10px;
     transition: all 0.3s ease;
     background: rgba(255, 255, 255, 0.95);
     font-size: 0.8rem;
     width: 100%;
     display: block;
-    max-width: 200px; /* Limitar ancho del select */
+    max-width: 200px;
 }
 
 .history-form-control:focus,
@@ -90,14 +86,14 @@
 .history-btn-custom {
     background: linear-gradient(135deg, #2980b9, #1abc9c);
     color: white;
-    padding: 8px 16px; /* Reducido de 10px 20px */
+    padding: 8px 16px;
     border: none;
     border-radius: 20px;
     font-weight: 600;
     font-size: 0.8rem;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(41, 128, 185, 0.4);
-    align-self: flex-end; /* Alinear botón al final */
+    align-self: flex-end;
 }
 
 .history-btn-custom:hover {
@@ -106,7 +102,6 @@
     box-shadow: 0 6px 18px rgba(41, 128, 185, 0.5);
 }
 
-/* Tarjetas de noticias */
 .card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 16px;
@@ -145,7 +140,6 @@
     font-size: 0.8rem;
 }
 
-/* Botón leer más */
 .btn-outline-success {
     border-color: #00986c;
     color: #00986c;
@@ -160,14 +154,12 @@
     color: white;
 }
 
-/* Alerts */
 .alert {
     border-radius: 20px;
     font-size: 0.9rem;
     padding: 15px;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .titulo-banner {
         font-size: 2rem;
@@ -184,7 +176,7 @@
 
     .filter-section .d-flex {
         flex-direction: column;
-        gap: 8px; /* Reducido para móviles */
+        gap: 8px;
     }
 
     .history-form-label {
@@ -196,13 +188,13 @@
     .history-form-select {
         padding: 8px 10px;
         font-size: 0.7rem;
-        max-width: 100%; /* Anular max-width en móviles */
+        max-width: 100%;
     }
 
     .history-btn-custom {
         padding: 8px 15px;
         font-size: 0.7rem;
-        width: 100%; /* Botón ocupa ancho completo en móviles */
+        width: 100%;
     }
 
     .card-title {

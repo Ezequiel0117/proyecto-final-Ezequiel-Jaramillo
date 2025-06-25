@@ -1,4 +1,3 @@
-/* Content container */
 .profile-content {
     flex: 1;
     position: relative;
@@ -7,7 +6,6 @@
     box-sizing: border-box;
 }
 
-/* Profile container */
 .profile-container {
     display: flex;
     gap: 30px;
@@ -16,7 +14,6 @@
     padding: 0 15px;
 }
 
-/* Sidebar */
 .profile-sidebar {
     background: rgba(255, 255, 255, 0.95);
     padding: 20px;
@@ -106,7 +103,6 @@
     padding: 20px;
 }
 
-/* Profile form */
 .profile-form {
     background: rgba(255, 255, 255, 0.95);
     padding: 20px;
@@ -233,7 +229,6 @@
     box-shadow: 0 6px 18px rgba(56, 161, 105, 0.5);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .profile-container {
         flex-direction: column;

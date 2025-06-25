@@ -11,7 +11,6 @@
         <div class="content-wrapper">
             <h2 class="page-title">🌱 Historial de Reciclaje</h2>
 
-            <!-- Residue Class Cards - 2x2 Grid -->
             <div class="residue-class-container" id="residue-cards">
                 <div class="residue-class-card plastic" onclick="showHistory('plastico')">
                     <div class="class-icon"><i class="fas fa-wine-bottle"></i></div>
@@ -38,14 +37,12 @@
                 </div>
             </div>
 
-            <!-- Botón Mostrar Todos -->
             <div class="show-all-container" id="show-all-container">
                 <button class="show-all-main-btn" onclick="showAllHistory()">
                     <i class="fas fa-list"></i> Mostrar Todos
                 </button>
             </div>
 
-            <!-- History Section (Initially Hidden) -->
             <div class="history-section" id="history-section" style="display: none;">
                 <div class="history-header">
                     <h3 id="history-title">Historial de Reciclaje</h3>
@@ -59,7 +56,6 @@
                     </div>
                 </div>
 
-                <!-- History Cards -->
                 <div class="card-container" id="history-cards">
                     {% for item in history_items %}
                     <div class="recycle-card">
@@ -123,7 +119,6 @@
                     </div>
                 {% endif %}
 
-                <!-- Paginación - Solo mostrar si hay más de una página -->
                 {% if history_items.paginator.num_pages > 1 %}
                 <nav class="pagination-section">
                     <ul class="pagination justify-content-center">

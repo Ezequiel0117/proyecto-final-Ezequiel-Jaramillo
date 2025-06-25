@@ -154,5 +154,5 @@ h2::before {
 #infoResiduos {
     flex: 1;
     overflow: auto;
-    font-size: 14px; /* Ajustar tamaño de fuente para mejor legibilidad */
+    font-size: 14px;
 }

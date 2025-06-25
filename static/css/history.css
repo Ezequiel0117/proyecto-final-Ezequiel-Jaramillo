@@ -1,4 +1,3 @@
-/* Main page container */
 .history-page {
     padding: 30px 15px;
     background: linear-gradient(135deg, #2c3e50 0%, #27ae60 35%, #00b894 70%, #2ecc71 100%);
@@ -30,7 +29,6 @@
     border-top-left-radius: 25px;
 }
 
-/* Content containers */
 .history-content {
     flex: 1;
     display: flex;
@@ -43,10 +41,9 @@
     width: 100%;
     padding: 0 15px;
     box-sizing: border-box;
-    overflow: hidden; /* Añadido para prevenir problemas de desbordamiento */
+    overflow: hidden;
 }
 
-/* Page title */
 .page-title {
     text-align: center;
     margin-bottom: 40px;
@@ -56,15 +53,14 @@
     font-size: 3.2rem;
 }
 
-/* Residue class container - 2x2 Grid */
 .residue-class-container {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 columnas */
-    grid-template-rows: 1fr 1fr; /* 2 filas */
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
     gap: 20px;
     margin-bottom: 30px;
     width: 100%;
-    max-width: 800px; /* Limitar el ancho máximo */
+    max-width: 800px;
     margin-left: auto;
     margin-right: auto;
     padding: 0;
@@ -72,7 +68,6 @@
     justify-content: center;
 }
 
-/* Residue class card */
 .residue-class-card {
     border: none;
     border-radius: 20px;
@@ -157,7 +152,6 @@
     font-weight: 500;
 }
 
-/* Card bottom section */
 .card-bottom {
     margin-top: auto;
 }
@@ -183,7 +177,6 @@
     box-shadow: 0 6px 18px rgba(41, 128, 185, 0.5);
 }
 
-/* Contenedor del botón Mostrar Todos */
 .show-all-container {
     display: flex;
     justify-content: center;
@@ -191,7 +184,7 @@
     margin: 30px 0;
     width: 100%;
     text-align: center;
-    clear: both; /* Prevenir interferencias de elementos flotantes */
+    clear: both;
 }
 
 .show-all-main-btn {
@@ -221,7 +214,6 @@
     font-size: 1rem;
 }
 
-/* Ajuste para responsive */
 @media (max-width: 768px) {
     .show-all-container {
         margin: 20px 0;
@@ -290,7 +282,6 @@
     box-shadow: 0 6px 18px rgba(231, 76, 60, 0.5);
 }
 
-/* Card container */
 .card-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -300,7 +291,6 @@
     box-sizing: border-box;
 }
 
-/* Recycle card */
 .recycle-card {
     border: none;
     border-radius: 20px;
@@ -335,7 +325,6 @@
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* Card header */
 .card-header {
     display: flex;
     align-items: center;
@@ -400,7 +389,6 @@
     font-weight: 500;
 }
 
-/* Weight badge */
 .weight-badge {
     background: linear-gradient(135deg, #27ae60, #229954);
     color: white;
@@ -413,7 +401,6 @@
     box-shadow: 0 3px 6px rgba(39, 174, 96, 0.4);
 }
 
-/* Residue list */
 .residue-list {
     list-style: none;
     padding: 0;
@@ -472,7 +459,6 @@
     font-size: 0.8rem;
 }
 
-/* Empty state */
 .empty-state {
     text-align: center;
     padding: 70px 20px;
@@ -487,7 +473,6 @@
     opacity: 0.8;
 }
 
-/* Paginación */
 .pagination-section {
     margin-top: auto;
     padding: 15px 0;
@@ -533,10 +518,9 @@
     cursor: not-allowed;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .residue-class-container {
-        grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+        grid-template-columns: 1fr;
         grid-template-rows: auto;
         gap: 15px;
     }
