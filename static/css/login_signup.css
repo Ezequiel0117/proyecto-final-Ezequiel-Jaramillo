@@ -42,7 +42,7 @@ body {
 
 .form-group {
   position: relative;
-  margin-bottom: 30px; /* Increased to reserve space for error bubbles */
+  margin-bottom: 30px;
   display: flex;
   justify-content: center;
 }
@@ -101,7 +101,7 @@ body {
 
 .field-error {
   position: absolute;
-  top: -40px; /* Position above the input */
+  top: -40px;
   left: 50%;
   transform: translateX(-50%);
   background-color: #e74c3c;
@@ -110,7 +110,7 @@ body {
   border-radius: 5px;
   font-size: 14px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  max-width: 41%; /* Match input width */
+  max-width: 41%;
   text-align: center;
   z-index: 10;
   white-space: nowrap;
