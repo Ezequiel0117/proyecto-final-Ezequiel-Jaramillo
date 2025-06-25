@@ -23,7 +23,7 @@
         <div class="error-message">{{ error }}</div>
         {% endif %}
 
-        <form method="POST" action="{% url 'signup' %}" class="auth-form">
+        <form method="POST" action="{% url 'signup' %}" class="auth-form" autocomplete="off">
           {% csrf_token %}
 
           <div class="form-group">

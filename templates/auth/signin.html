@@ -18,7 +18,7 @@
       <div class="form-section">
         <h2>Iniciar Sesión</h2>
 
-        <form action="{% url 'signin' %}" method="post" class="auth-form">
+        <form action="{% url 'signin' %}" method="post" class="auth-form" autocomplete="off">
           {% csrf_token %}
 
           <div class="form-group">
