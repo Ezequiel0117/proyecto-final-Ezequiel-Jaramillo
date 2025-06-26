@@ -247,7 +247,6 @@ function crearGraficoImpacto(impacto) {
         .innerRadius(radius * 0.4)
         .outerRadius(radius * 1.1);
 
-    // Crear segmentos del pie
     const arcs = g.selectAll(".arc")
         .data(pie(datosConValores))
         .enter()
