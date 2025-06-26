@@ -132,7 +132,6 @@
     attribution: "© OpenStreetMap contributors",
   }).addTo(map);
 
-  // Toast Notification Function
   function showToast(message, type = 'success') {
     const toastContainer = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -143,14 +142,12 @@
     `;
     toastContainer.appendChild(toast);
 
-    // Auto-remove after 3 seconds
     setTimeout(() => {
       toast.classList.add('fade-out');
       setTimeout(() => toast.remove(), 300);
     }, 3000);
   }
 
-  // Map click event listener
   map.on('click', function(e) {
     if (modoSelector) {
       const lat = e.latlng.lat.toFixed(6);
