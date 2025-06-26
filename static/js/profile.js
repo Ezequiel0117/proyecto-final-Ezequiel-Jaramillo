@@ -2,12 +2,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const changePictureBtn = document.querySelector('.btn-change-picture');
     const pictureInput = document.querySelector('#profilePictureInput');
     const previewImg = document.querySelector('#profilePreview');
-    const form = document.querySelector('.profile-form-content');
+    const form = document.querySelector('.profile-form');
+    const saveModal = document.querySelector('#saveModal');
+    const closeModalBtn = document.querySelector('#closeModal');
+    const avatarOverlay = document.querySelector('.avatar-overlay');
 
     if (changePictureBtn && pictureInput && previewImg && form) {
         changePictureBtn.addEventListener('click', function () {
             pictureInput.click();
         });
+
+        if (avatarOverlay) {
+            avatarOverlay.addEventListener('click', function () {
+                pictureInput.click();
+            });
+        }
 
         pictureInput.addEventListener('change', function () {
             if (pictureInput.files.length > 0) {
@@ -15,25 +24,31 @@ document.addEventListener('DOMContentLoaded', function () {
                 const reader = new FileReader();
 
                 reader.onload = function (e) {
-                    previewImg.src = e.target.result; 
+                    previewImg.src = e.target.result;
+                    changePictureBtn.innerHTML = `<i class="fas fa-camera me-1"></i> ${file.name.substring(0, 20)}${file.name.length > 20 ? '...' : ''}`;
                 };
 
                 reader.readAsDataURL(file);
-                changePictureBtn.innerHTML = `<i class="fas fa-camera me-1"></i> ${file.name}`;
             } else {
-                previewImg.src = '{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static "img/user.webp" %}{% endif %}';
+                previewImg.src = document.querySelector('[data-original-src]')?.getAttribute('data-original-src') || '/static/img/user.webp';
                 changePictureBtn.innerHTML = `<i class="fas fa-camera me-1"></i> Cambiar foto de perfil`;
             }
         });
 
         form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (saveModal) {
+                saveModal.classList.add('show');
+            }
             setTimeout(() => {
-                if (request.user.profile_picture) {
-                    previewImg.src = '{{ request.user.profile_picture.url }}'.replace(/\/\/+/g, '/'); // Actualizar con URL de S3
-                } else {
-                    previewImg.src = '{% static "img/user.webp" %}';
-                }
-            }, 100); 
+                form.submit();
+            }, 1800);
         });
+
+        if (closeModalBtn && saveModal) {
+            closeModalBtn.addEventListener('click', function () {
+                saveModal.classList.remove('show');
+            });
+        }
     }
 });

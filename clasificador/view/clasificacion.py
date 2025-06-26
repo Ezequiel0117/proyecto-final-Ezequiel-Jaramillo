@@ -47,6 +47,15 @@ def clasificar_residuo(request):
 
     if request.method == 'POST' and 'imagen' in request.FILES:
         imagen_file = request.FILES['imagen']
+        valid_types = ['image/jpeg', 'image/png']
+        if imagen_file.content_type not in valid_types:
+            error = "Solo se permiten imágenes JPG o PNG."
+            return render(request, 'clasificar_residuo/subir.html', {
+                'form': None,
+                'residuos_con_confianza': [],
+                'imagen_url': None,
+                'error': error
+            })
         instancia = ImagenResiduo(user=request.user, imagen=imagen_file)
         try:
             instancia.save()

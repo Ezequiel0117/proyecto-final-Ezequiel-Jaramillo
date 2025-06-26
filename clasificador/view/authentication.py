@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import login, logout, authenticate
+from django.db.models import IntegerField as modelsIntegerField
 from django.contrib.auth.decorators import login_required
 from django.templatetags.static import static
 from django.db import IntegrityError
@@ -10,7 +11,8 @@ from ..models import ImagenResiduo, CustomUser
 from ..forms import CustomUserCreationForm, CustomUserEditForm
 from django.utils import timezone
 from django.db.models import Sum, Case, When
-from datetime import timedelta
+from datetime import datetime
+
 
 def home(request):
     if request.user.is_authenticated and 'profile_pic_url' not in request.session:
@@ -96,8 +98,14 @@ def profile(request):
         else:
             request.session['profile_pic_url'] = static('img/user.webp')
 
-    thirty_days_ago = timezone.now() - timedelta(days=30)
-    residuos = ImagenResiduo.objects.filter(user=request.user, creado__gte=thirty_days_ago)
+    now = timezone.now()
+    inicio_mes = timezone.make_aware(datetime(now.year, now.month, 1))
+
+    residuos_mes = ImagenResiduo.objects.filter(user=request.user, creado__gte=inicio_mes)
+    total_residuos_mes = sum(residuo.cantidad_residuos for residuo in residuos_mes)
+
+    residuos_total = ImagenResiduo.objects.filter(user=request.user)
+    total_residuos_global = sum(residuo.cantidad_residuos for residuo in residuos_total)
 
     plasticos = 0
     papel = 0
@@ -105,7 +113,7 @@ def profile(request):
     metal = 0
     peso_por_residuo = 0.1
 
-    for residuo in residuos:
+    for residuo in residuos_mes:
         if residuo.resultado and residuo.cantidad_residuos > 0:
             clases = residuo.resultado.lower().split(', ')
             for clase in clases:
@@ -118,29 +126,53 @@ def profile(request):
                 elif 'metal' in clase:
                     metal += residuo.cantidad_residuos * peso_por_residuo
 
-    total_residuos = sum(residuo.cantidad_residuos for residuo in residuos)
-
     ranking = (CustomUser.objects.filter(is_superuser=False)
-               .annotate(total_residuos=Sum(
-                   Case(
-                       When(imagen_residuo_set__creado__gte=thirty_days_ago,
-                            then='imagen_residuo_set__cantidad_residuos'),
-                       default=0,
-                       output_field=models.IntegerField()
+               .annotate(
+                   total_residuos_mes=Sum(
+                       Case(
+                           When(imagen_residuo_set__creado__gte=inicio_mes,
+                                then='imagen_residuo_set__cantidad_residuos'),
+                           default=0,
+                           output_field=modelsIntegerField()
+                       )
+                   ),
+                   total_residuos_global=Sum(
+                       'imagen_residuo_set__cantidad_residuos',
+                       output_field=modelsIntegerField()
                    )
-               ))
-               .values('username', 'first_name', 'last_name', 'total_residuos')
-               .order_by('-total_residuos')[:10])
+               )
+               .values('username', 'first_name', 'last_name', 'total_residuos_mes', 'total_residuos_global')
+               .order_by('-total_residuos_mes')[:10])
+
+    ranking_list = list(ranking)
+    ranking_position = None
+    for i, user in enumerate(ranking_list, 1):
+        if user['username'] == request.user.username:
+            ranking_position = i
+            break
+
+    logros = [
+        {'nombre': 'Eco Warrior', 'descripcion': 'Recicla 10 residuos', 'residuos_requeridos': 10, 'completado': total_residuos_global >= 10},
+        {'nombre': 'Green Champion', 'descripcion': 'Recicla 50 residuos', 'residuos_requeridos': 50, 'completado': total_residuos_global >= 50},
+        {'nombre': 'Planet Saver', 'descripcion': 'Recicla 100 residuos', 'residuos_requeridos': 100, 'completado': total_residuos_global >= 100},
+    ]
 
     context = {
         'form': form,
+        'user_stats': {
+            'total_residuos_mes': total_residuos_mes,
+            'total_residuos_global': total_residuos_global,
+            'ranking_position': ranking_position or '-',
+        },
         'resumen': {
-            'residuos_clasificados': total_residuos,
+            'residuos_clasificados': total_residuos_mes,
             'plasticos': round(plasticos, 1),
             'papel': round(papel, 1),
             'vidrio': round(vidrio, 1),
-            'metal': round(metal, 1)
+            'metal': round(metal, 1),
         },
-        'ranking': ranking
+        'ranking': ranking_list,
+        'logros': logros,
     }
+
     return render(request, 'core/profile.html', context)

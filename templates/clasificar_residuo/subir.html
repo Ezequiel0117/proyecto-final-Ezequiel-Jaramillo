@@ -50,8 +50,11 @@
 
     <form id="formulario" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
-      <input type="file" name="imagen" id="imagenInput" accept="image/*"/>
+      <input type="file" name="imagen" id="imagenInput" accept="image/jpeg,image/png"/>
       <button type="submit" id="clasificarBtn">Clasificar</button>
+      {% if error %}
+        <div class="alert alert-danger mt-2">{{ error }}</div>
+      {% endif %}
     </form>
   </div>
 

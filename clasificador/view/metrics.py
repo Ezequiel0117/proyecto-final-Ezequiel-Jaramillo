@@ -11,6 +11,7 @@ import logging
 from datetime import timedelta
 import matplotlib.pyplot as plt
 import io
+from datetime import datetime
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -20,8 +21,10 @@ logger = logging.getLogger(__name__)
 def api_metricas(request):
     try:
         user = request.user
-        thirty_days_ago = timezone.now() - timedelta(days=30)
-        residuos = ImagenResiduo.objects.filter(user=user, creado__gte=thirty_days_ago)
+        now = timezone.now()
+        inicio_mes = timezone.make_aware(datetime(now.year, now.month, 1))
+
+        residuos = ImagenResiduo.objects.filter(user=user, creado__gte=inicio_mes)
 
         plasticos = 0
         papel = 0
@@ -83,8 +86,9 @@ def api_metricas(request):
 def export_metrics_pdf(request):
     try:
         user = request.user
-        thirty_days_ago = timezone.now() - timedelta(days=30)
-        residuos = ImagenResiduo.objects.filter(user=user, creado__gte=thirty_days_ago)
+        now = timezone.now()
+        inicio_mes = timezone.make_aware(datetime(now.year, now.month, 1))
+        residuos = ImagenResiduo.objects.filter(user=user, creado__gte=inicio_mes)
 
         plasticos, papel, vidrio, metal = 0, 0, 0, 0
         peso_por_residuo = 0.1
@@ -119,7 +123,7 @@ def export_metrics_pdf(request):
         header_text = f"""REPORTE DE RECICLAJE
         
 Usuario: {user.username}
-Período: Últimos 30 días
+Período: Mes actual
 Fecha: {fecha_actual}"""
         
         ax_header.text(0.5, 0.5, header_text, ha='center', va='center',
@@ -241,7 +245,6 @@ Fecha: {fecha_actual}"""
                 else:
                     table_detail[(i, j)].set_facecolor('#f8f9fa' if i % 2 == 0 else 'white')
         
-        # Guardar PDF
         buffer = io.BytesIO()
         plt.savefig(buffer, format='pdf', bbox_inches='tight', dpi=300,
                    facecolor='white', edgecolor='none')

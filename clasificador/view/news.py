@@ -5,10 +5,11 @@ from datetime import timedelta
 import requests
 import re
 import os
+from dateutil.parser import parse
 
 @login_required
 def environmental_news(request):
-    api_key = os.environ.get("API_KEY_NEWSAPI", ""),
+    api_key = os.environ.get("API_KEY_NEWSAPI", "")
     search_query = request.GET.get('q', '').strip()
     days = request.GET.get('days', '7')
     try:
@@ -59,8 +60,15 @@ def environmental_news(request):
             if any(keyword in ((article.get('title', '') or '') + (article.get('description', '') or '')).lower()
                    for keyword in keywords)
         ] or new_articles
+
+        for article in filtered_articles:
+            if article.get('publishedAt'):
+                try:
+                    article['publishedAt'] = parse(article['publishedAt'])
+                except (ValueError, TypeError):
+                    article['publishedAt'] = None
+
         articles = filtered_articles
-        message = f"Noticias actualizadas para: {search_query or 'temas ambientales'} en los últimos {days} días."
     except requests.exceptions.HTTPError as e:
         message = f"Error HTTP al obtener noticias: {e.response.status_code} - {e.response.text}"
     except requests.exceptions.RequestException as e:

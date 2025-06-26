@@ -3,93 +3,234 @@
 {% block title %}Perfil - EcoSoft{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/profile.css' %}?v=1.0">
-<script src="{% static 'js/profile.js' %}?v=1.0" defer></script>
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<script src="{% static 'js/profile.js' %}" defer></script>
 
 <div class="profile-page">
-    <div class="profile-content">
-        <div class="profile-container">
-            <div class="profile-sidebar">
-                <h2 class="sidebar-title">Perfil del Usuario</h2>
+    <div class="profile-header">
+        <div class="header-content">
+            <div class="header-avatar">
                 <img id="profilePreview"
                      src="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'img/user.webp' %}{% endif %}"
                      alt="Avatar"
-                     class="user-avatar">
-                <strong class="user-name">{{ request.user.first_name }} {{ request.user.last_name }}</strong>
+                     class="header-avatar-img"
+                     data-original-src="{% static 'img/user.webp' %}"
+                     data-profile-picture-url="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'img/user.webp' %}{% endif %}">
+                <div class="avatar-overlay">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            <div class="header-info">
+                <h1 class="user-name">{{ request.user.first_name }} {{ request.user.last_name }}</h1>
+                <p class="user-username">@{{ request.user.username }}</p>
+                <p class="user-email">{{ request.user.email }}</p>
+                <div class="user-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-recycle"></i>
+                        <span class="stat-number">{{ user_stats.total_residuos_global|default:0 }}</span>
+                        <span class="stat-label">Residuos Totales</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-recycle"></i>
+                        <span class="stat-number">{{ user_stats.total_residuos_mes|default:0 }}</span>
+                        <span class="stat-label">Residuos Mes</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-trophy"></i>
+                        <span class="stat-number">#{{ user_stats.ranking_position|default:'-' }}</span>
+                        <span class="stat-label">Posición Ranking</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <h3 class="ranking-title">Ranking de Reciclaje</h3>
-                <table class="ranking-table">
-                    <thead>
-                        <tr>
-                            <th>Posición</th>
-                            <th>Usuario</th>
-                            <th>Residuos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in ranking %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ user.username }}</td>
-                            <td>{{ user.total_residuos }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="3" class="empty">No hay datos de ranking disponibles</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <div class="profile-container">
+        <div class="profile-sidebar">
+            <div class="sidebar-card">
+                <h3 class="card-title">
+                    <i class="fas fa-trophy"></i>
+                    Top 10 Recicladores del Mes
+                </h3>
+                <div class="ranking-container">
+                    {% for user in ranking %}
+                    <div class="ranking-item {% if forloop.counter <= 3 %}top-{{ forloop.counter }}{% endif %} {% if user.username == request.user.username %}current-user{% endif %}">
+                        <div class="ranking-position">
+                            {% if forloop.counter == 1 %}
+                                <i class="fas fa-crown gold"></i>
+                            {% elif forloop.counter == 2 %}
+                                <i class="fas fa-medal silver"></i>
+                            {% elif forloop.counter == 3 %}
+                                <i class="fas fa-medal bronze"></i>
+                            {% else %}
+                                <span class="position-number">{{ forloop.counter }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="ranking-info">
+                            <span class="ranking-username">{{ user.username }}</span>
+                            <span class="ranking-score">{{ user.total_residuos_mes }} residuos (Mes) / {{ user.total_residuos_global }} (Total)</span>
+                        </div>
+                        {% if user.username == request.user.username %}
+                            <div class="current-user-badge">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="no-ranking">
+                        <i class="fas fa-info-circle"></i>
+                        <p>No hay datos de ranking disponibles</p>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
 
-            <div class="profile-form">
-                <h1 class="form-title">Datos Personales</h1>
-                <form method="post" class="profile-form-content" enctype="multipart/form-data">
+            <div class="sidebar-card">
+                <h3 class="card-title">
+                    <i class="fas fa-award"></i>
+                    Logros Recientes
+                </h3>
+                <div class="achievements">
+                    {% for logro in logros %}
+                    <div class="achievement-item {% if logro.completado %}completed{% endif %}">
+                        <i class="fas fa-{% if logro.nombre == 'Eco Warrior' %}seedling{% elif logro.nombre == 'Green Champion' %}leaf{% else %}globe{% endif %}"></i>
+                        <div class="achievement-info">
+                            <span class="achievement-name">{{ logro.nombre }}</span>
+                            <span class="achievement-desc">{{ logro.descripcion }}</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="no-ranking">
+                        <i class="fas fa-info-circle"></i>
+                        <p>No hay logros disponibles</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-main">
+            <div class="main-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-user-edit"></i>
+                        Información Personal
+                    </h2>
+                    <p class="card-subtitle">Actualiza tus datos personales</p>
+                </div>
+
+                <form method="post" class="profile-form" enctype="multipart/form-data">
                     {% csrf_token %}
 
-                    <div class="form-group">
-                        <label class="form-label">Foto de perfil:</label>
-                        <div class="profile-picture-wrapper">
-                            <input type="file" name="profile_picture" class="form-control d-none" id="profilePictureInput">
-                            <button type="button" class="btn-change-picture">
-                                <i class="fas fa-camera me-1"></i> Cambiar foto de perfil
-                            </button>
+                    <div class="form-section">
+                        <h3 class="section-title">Foto de Perfil</h3>
+                        <div class="form-group photo-group">
+                            <div class="photo-upload-area">
+                                <input type="file" name="profile_picture" class="file-input" id="profilePictureInput" accept="image/*">
+                                <button type="button" class="photo-upload-btn btn-change-picture" id="changePhotoBtn">
+                                    <i class="fas fa-camera"></i>
+                                    <span class="upload-text">Cambiar foto de perfil</span>
+                                    <span class="upload-subtext">JPG, PNG máx. 5MB</span>
+                                </button>
+                                <div class="photo-preview">
+                                    <img src="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'img/user.webp' %}{% endif %}" 
+                                         alt="Preview" class="preview-img" id="profilePreview"
+                                         data-original-src="{% static 'img/user.webp' %}"
+                                         data-profile-picture-url="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'img/user.webp' %}{% endif %}">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Nombre de usuario:</label>
-                        {{ form.username }}
-                        <i class="fas fa-pen edit-icon"></i>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nombres:</label>
-                        {{ form.first_name }}
-                        <i class="fas fa-pen edit-icon"></i>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Apellidos:</label>
-                        {{ form.last_name }}
-                        <i class="fas fa-pen edit-icon"></i>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Correo electrónico:</label>
-                        {{ form.email }}
-                        <i class="fas fa-pen edit-icon"></i>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Teléfono:</label>
-                        {{ form.phone }}
-                        <i class="fas fa-pen edit-icon"></i>
+                    <div class="form-section">
+                        <h3 class="section-title">Datos Básicos</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user"></i>
+                                    Nombre de usuario
+                                </label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <div class="error-message">{{ form.username.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-envelope"></i>
+                                    Correo electrónico
+                                </label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="error-message">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-id-card"></i>
+                                    Nombres
+                                </label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="error-message">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-id-card"></i>
+                                    Apellidos
+                                </label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <div class="error-message">{{ form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-phone"></i>
+                                    Teléfono
+                                </label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                    <div class="error-message">{{ form.phone.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-actions">
-                        <a href="{% url 'password_reset' %}" class="btn-password">Cambiar contraseña</a>
-                        <button type="submit" class="btn-save">Guardar cambios</button>
+                        <a href="{% url 'password_reset' %}" class="btn btn-secondary">
+                            <i class="fas fa-key"></i>
+                            Cambiar contraseña
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-save">
+                            <i class="fas fa-save"></i>
+                            Guardar cambios
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal" id="saveModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>¡Datos actualizados correctamente!</h3>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <p>Tu información personal ha sido guardada exitosamente.</p>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

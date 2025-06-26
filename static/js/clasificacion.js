@@ -112,6 +112,14 @@ modoArchivoBtn.addEventListener("click", () => {
 imagenInput.addEventListener("change", function () {
   const file = this.files[0];
   if (file) {
+    const validTypes = ["image/jpeg", "image/png"];
+    if (!validTypes.includes(file.type)) {
+      alert("Solo se permiten imágenes JPG o PNG.");
+      imagenInput.value = "";
+      previewImg.src = "/static/img/camera.png";
+      previewImg.style.display = "block";
+      return;
+    }
     const reader = new FileReader();
     reader.onload = function (e) {
       previewImg.src = e.target.result;

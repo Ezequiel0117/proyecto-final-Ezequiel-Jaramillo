@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load tz %}
 
 {% block title %}Noticias Ambientales - EcoSoft{% endblock %}
 
@@ -50,7 +51,7 @@
                         <div class="card-body">
                             <h5 class="card-title text-success">{{ article.title|truncatewords:10 }}</h5>
                             <p class="card-text text-muted">{{ article.description|truncatewords:20|default:"Sin descripción disponible" }}</p>
-                            <p class="text-muted small"><strong>Publicado:</strong> {{ article.publishedAt|date:"d/m/Y H:i" }}</p>
+                            <p class="text-muted small"><strong>Publicado:</strong> {{ article.publishedAt|timezone:"America/Santiago"|date:"d/m/Y H:i"|default:"Fecha no disponible" }}</p>
                             <a href="{{ article.url }}" target="_blank" class="btn btn-outline-success btn-sm">Leer más</a>
                         </div>
                     </div>

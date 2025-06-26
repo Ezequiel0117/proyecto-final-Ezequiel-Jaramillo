@@ -86,6 +86,29 @@ class CustomUserEditForm(forms.ModelForm):
         if self.instance.profile_picture:
             self.fields['profile_picture'].widget.attrs['data-current-picture'] = self.instance.profile_picture.url
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            # Validar formato de correo
+            email_regex = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
+            import re
+            if not re.match(email_regex, email):
+                raise ValidationError('Ingresa un correo electrónico válido.')
+            # Verificar unicidad, excluyendo el correo del usuario actual
+            if CustomUser.objects.filter(email=email).exclude(id=self.instance.id).exists():
+                raise ValidationError('Este correo electrónico ya está registrado.')
+        return email
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if phone:
+            # Validar formato de teléfono
+            phone_regex = r'^[\+]?[0-9\s\-\(\)]{10,}$'
+            import re
+            if not re.match(phone_regex, phone):
+                raise ValidationError('Ingresa un número de teléfono válido (mínimo 10 caracteres, puede incluir +, espacios, guiones o paréntesis).')
+        return phone
+
 class ImagenForm(forms.ModelForm):
     class Meta:
         model = ImagenResiduo
